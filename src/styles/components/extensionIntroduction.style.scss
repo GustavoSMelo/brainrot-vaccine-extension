@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+.introductionContainer {
+    margin: 60px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+
+    img {
+        width: 120px;
+    }
+
+    figcaption {
+        font-size: 24pt;
+        display: flex;
+        flex-direction: column;
+        font-weight: bold;
+
+        p {
+            font-size: 16pt;
+        }
+
+        small {
+            font-size: 8pt;
+        }
+    }
+}
