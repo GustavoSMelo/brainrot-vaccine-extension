@@ -7,6 +7,7 @@ import TelegramLogo from "../assets/telegram.svg";
 import XvideosLogo from "../assets/xvd.svg";
 import PornhubLogo from "../assets/prnhb.svg";
 import OnlyfansLogo from "../assets/onlyfans.svg";
+import CameraPriveLogo from "../assets/cameraprive.jpg";
 
 import Bet365Logo from "../assets/bet365.png";
 import BetfairLogo from "../assets/betfair.png";
@@ -30,6 +31,7 @@ const adultContentBlocked = ref([
     { siteName: "Xvideos", restricted: true },
     { siteName: "PornHub", restricted: true },
     { siteName: "OnlyFans", restricted: true },
+    { siteName: "CameraPrive", restricted: true },
 ]);
 
 const betsBlocked = ref([
@@ -128,6 +130,45 @@ const handleChangeRestrictionBets = (siteName: string) => {
         site.restricted;
 };
 
+const isURLBlocked = (websiteURL: string): boolean => {
+    let isBlocked = false;
+    let helper = false;
+
+    console.log(`websiteURL: ${websiteURL}`);
+
+    helper = websites.adultContent.find((ac) =>
+        websiteURL.toLowerCase().includes(ac.siteURL.toLowerCase())
+    )
+        ? true
+        : false;
+
+    console.log(`helper02: ${helper}`);
+
+    if (helper) isBlocked = true;
+
+    helper = websites.bets.find((bet) =>
+        websiteURL.toLowerCase().includes(bet.siteURL.toLowerCase())
+    )
+        ? true
+        : false;
+
+    console.log(`helper03: ${helper}`);
+
+    if (helper) isBlocked = true;
+
+    helper = websites.socialMedias.find((sm) =>
+        websiteURL.toLowerCase().includes(sm.siteURL.toLowerCase())
+    )
+        ? true
+        : false;
+
+    console.log(`helper04: ${helper}`);
+
+    if (helper) isBlocked = true;
+
+    return isBlocked;
+};
+
 const websites = {
     socialMedias: [
         {
@@ -171,6 +212,11 @@ const websites = {
             siteName: "PornHub",
             siteURL: "https://pornhub.com",
             logo: PornhubLogo,
+        },
+        {
+            siteName: "CameraPrive",
+            siteURL: "https://cameraprive.com",
+            logo: CameraPriveLogo,
         },
         {
             siteName: "OnlyFans",
@@ -230,4 +276,5 @@ export {
     handleChangeRestrictionAdultContent,
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
+    isURLBlocked,
 };
