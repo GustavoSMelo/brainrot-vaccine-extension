@@ -1,41 +1,60 @@
+<script lang="ts">
+import {
+    isRestrictedAdultContent,
+    websites,
+    handleChangeRestrictionAdultContent,
+} from "../helpers/websites";
+
+export default {
+    data() {
+        return {
+            websites,
+            isRestrictedAdultContent,
+            handleChangeRestrictionAdultContent,
+        };
+    },
+};
+</script>
+
 <template>
     <details open>
-        <summary>Adult Content</summary>
+        <summary aria-controls="adult-content">Adult Content</summary>
 
         <section>
-            <div>
+            <div v-for="(website, index) in websites.adultContent" :key="index">
                 <figure>
-                    <img src="../assets/onlyfans.svg" alt="Onlyfans logo" />
+                    <img
+                        :src="website.logo"
+                        :alt="`${website.siteName} logo`"
+                    />
 
-                    <figcaption>Onlyfans</figcaption>
+                    <figcaption>{{ website.siteName }}</figcaption>
                 </figure>
 
-                <label class="switch selected">
-                    <input class="btnSwitch" type="checkbox" />
+                <label
+                    v-if="isRestrictedAdultContent(website.siteName)"
+                    class="switch selected"
+                >
+                    <input
+                        class="btnSwitch"
+                        type="checkbox"
+                        @click="
+                            handleChangeRestrictionAdultContent(
+                                website.siteName
+                            )
+                        "
+                    />
                 </label>
-            </div>
-
-            <div>
-                <figure>
-                    <img src="../assets/prnhb.svg" alt="Pornhub logo" />
-
-                    <figcaption>Pornhub</figcaption>
-                </figure>
-
-                <label class="switch">
-                    <input type="checkbox" />
-                </label>
-            </div>
-
-            <div>
-                <figure>
-                    <img src="../assets/xvd.svg" alt="Xvideos logo" />
-
-                    <figcaption>Xvideos</figcaption>
-                </figure>
-
-                <label class="switch">
-                    <input type="checkbox" />
+                <label v-else class="switch">
+                    <input
+                        class="btnSwitch"
+                        type="checkbox"
+                        @click="
+                            handleChangeRestrictionAdultContent(
+                                website.siteName
+                            )
+                        "
+                    />
                 </label>
             </div>
         </section>

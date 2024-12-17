@@ -1,83 +1,54 @@
+<script lang="ts">
+import {
+    websites,
+    isRestrictedSocialMedia,
+    handleChangeRestrictionSocialMedia,
+} from "../helpers/websites";
+
+export default {
+    data() {
+        return {
+            websites,
+            isRestrictedSocialMedia,
+            handleChangeRestrictionSocialMedia,
+        };
+    },
+};
+</script>
+
 <template>
     <details open>
-        <summary>Social Medias</summary>
+        <summary aria-controls="socialmedia-content">Social Medias</summary>
 
         <section>
-            <div>
+            <div v-for="(website, index) in websites.socialMedias" :key="index">
                 <figure>
                     <img
-                        src="../assets/instagram.svg"
-                        alt="instagram logo"
+                        :src="website.logo"
+                        :alt="`${website.siteName} logo`"
                     />
 
-                    <figcaption>Instagram</figcaption>
+                    <figcaption>{{ website.siteName }}</figcaption>
                 </figure>
 
-                <label class="switch">
-                    <input type="checkbox" />
-                </label>
-            </div>
-
-            <div>
-                <figure>
-                    <img
-                        src="../assets/instagram.svg"
-                        alt="instagram logo"
+                <label
+                    v-if="isRestrictedSocialMedia(website.siteName)"
+                    class="switch selected"
+                >
+                    <input
+                        class="btnSwitch"
+                        type="checkbox"
+                        @click="
+                            handleChangeRestrictionSocialMedia(website.siteName)
+                        "
                     />
-
-                    <figcaption>Instagram (Reels)</figcaption>
-                </figure>
-
-                <label class="switch">
-                    <input type="checkbox" />
                 </label>
-            </div>
-
-            <div>
-                <figure>
-                    <img src="../assets/tiktok.svg" alt="instagram logo" />
-
-                    <figcaption>Tiktok</figcaption>
-                </figure>
-
-                <label class="switch">
-                    <input type="checkbox" />
-                </label>
-            </div>
-
-            <div>
-                <figure>
-                    <img src="../assets/twitter.svg" alt="instagram logo" />
-
-                    <figcaption>Twitter / X</figcaption>
-                </figure>
-
-                <label class="switch">
-                    <input type="checkbox" />
-                </label>
-            </div>
-
-            <div>
-                <figure>
-                    <img src="../assets/telegram.svg" alt="instagram logo" />
-
-                    <figcaption>Telegram</figcaption>
-                </figure>
-
-                <label class="switch">
-                    <input type="checkbox" />
-                </label>
-            </div>
-
-            <div>
-                <figure>
-                    <img src="../assets/youtube.svg" alt="instagram logo" />
-
-                    <figcaption>Youtube (shorts)</figcaption>
-                </figure>
-
-                <label class="switch">
-                    <input type="checkbox" />
+                <label v-else class="switch">
+                    <input
+                        class="btnSwitch"
+                        type="checkbox"
+                        @click="handleChangeRestrictionSocialMedia(website.siteName)"
+                    />
                 </label>
             </div>
         </section>

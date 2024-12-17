@@ -2,7 +2,7 @@
 
 main {
     display: flex;
-    align-items:  center;
+    align-items: center;
     flex-direction: column;
 }
 
@@ -13,12 +13,32 @@ details {
     width: 60%;
 
     summary {
+        display: flex;
+        align-items: center;
         background-color: #fff;
         color: #000;
         padding: 14px;
         font-size: 22pt;
         cursor: pointer;
         font-weight: bold;
+        list-style: none;
+
+        &::marker {
+            content: "";
+        }
+
+        &::before {
+            content: "";
+            display: flex;
+            flex-direction: row;
+            width: 28px;
+            height: 28px;
+            margin-right: 8px;
+            background-image: url("../../assets/arrow.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            transition: transform 0.3s ease;
+        }
     }
 
     section {
@@ -54,7 +74,7 @@ details {
                 padding: 4px 2px;
                 cursor: pointer;
                 border: solid 2px #000;
-                background-color: #722F37;
+                background-color: #722f37;
 
                 input {
                     appearance: none;
@@ -78,12 +98,17 @@ details {
     }
 }
 
+details[open] {
+    summary::before {
+        transform: rotate(90deg);
+    }
+}
+
 @media screen and (max-width: 600px) {
     details {
         width: 95%;
     }
 }
-
 
 @media screen and (max-width: 400px) {
     details {

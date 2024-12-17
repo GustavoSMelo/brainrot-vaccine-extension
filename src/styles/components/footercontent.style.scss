@@ -1,0 +1,36 @@
+@charset "utf-8";
+
+footer {
+    div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+        cursor: pointer;
+        color: #909090;
+        transition: 0.2s;
+
+        &:hover {
+            img, p {
+                transition: 0.2s;
+                transform: scale(1.1);
+            }
+
+            img {
+                margin-right: 10px;
+            }
+        }
+    }
+
+    img {
+        color: #909090;
+    }
+
+    p {
+        font-size: 12pt;
+        color: #fff;
+        margin-left: 10px;
+        font-weight: bold;
+    }
+}
