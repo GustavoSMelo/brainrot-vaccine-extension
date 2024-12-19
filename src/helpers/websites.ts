@@ -8,6 +8,7 @@ import XvideosLogo from "../assets/xvd.svg";
 import PornhubLogo from "../assets/prnhb.svg";
 import OnlyfansLogo from "../assets/onlyfans.svg";
 import CameraPriveLogo from "../assets/cameraprive.jpg";
+import EroMeLogo from "../assets/erome.svg";
 
 import Bet365Logo from "../assets/bet365.png";
 import BetfairLogo from "../assets/betfair.png";
@@ -16,34 +17,32 @@ import TigrinhoLogo from "../assets/tigrinho.jpg";
 import KTOLogo from "../assets/TKO.png";
 import BlazeLogo from "../assets/blaze.webp";
 
+import {
+    getAdultContentBlocked,
+    getBetsBlocked,
+    getSocialMediasBlocked,
+} from "../helpers/getSyncStorageDatas";
+
 import { ref } from "vue";
+import { adultContentInitialState, betsInitialState, socialMediasInitialState } from "./initialStates";
 
-const socialMediasBlockeds = ref([
-    { siteName: "Tiktok", restricted: true },
-    { siteName: "Instagram", restricted: true },
-    { siteName: "Instagram (reels)", restricted: true },
-    { siteName: "Twitter / X", restricted: true },
-    { siteName: "Telegram", restricted: true },
-    { siteName: "Youtube (Shorts)", restricted: true },
-]);
+const socialMediasBlockeds = ref([ ...socialMediasInitialState ]);
+const adultContentBlocked = ref([ ...adultContentInitialState ]);
+const betsBlocked = ref([ ...betsInitialState ]);
 
-const adultContentBlocked = ref([
-    { siteName: "Xvideos", restricted: true },
-    { siteName: "PornHub", restricted: true },
-    { siteName: "OnlyFans", restricted: true },
-    { siteName: "CameraPrive", restricted: true },
-]);
+const startSyncData = async () => {
+    const socialMediasHelper = await getSocialMediasBlocked();
+    const adultMediasHelper = await getAdultContentBlocked();
+    const betsBlockedHelper = await getBetsBlocked();
 
-const betsBlocked = ref([
-    { siteName: "Bet365", restricted: true },
-    { siteName: "Betano BR", restricted: true },
-    { siteName: "Betano", restricted: true },
-    { siteName: "Tigrinho", restricted: true },
-    { siteName: "Betfair", restricted: true },
-    { siteName: "KTO", restricted: true },
-    { siteName: "Blaze", restricted: true },
-    { siteName: "Blaze Space1", restricted: true },
-]);
+    console.log(socialMediasHelper);
+    console.log(adultMediasHelper);
+    console.log(betsBlockedHelper);
+
+    socialMediasBlockeds.value = socialMediasHelper;
+    adultContentBlocked.value = adultMediasHelper;
+    betsBlocked.value = betsBlockedHelper;
+};
 
 const isRestrictedSocialMedia = (siteName: string) => {
     const site = socialMediasBlockeds.value.find(
@@ -82,7 +81,7 @@ const isRestrictedAdultContent = (siteName: string) => {
     return site.restricted;
 };
 
-const handleChangeRestrictionSocialMedia = (siteName: string) => {
+const handleChangeRestrictionSocialMedia = async (siteName: string) => {
     const site = socialMediasBlockeds.value.find(
         (site) => site.siteName === siteName
     );
@@ -97,9 +96,11 @@ const handleChangeRestrictionSocialMedia = (siteName: string) => {
     socialMediasBlockeds.value.find(
         (site) => site.siteName === siteName
     )!.restricted = site.restricted;
+
+    await chrome.storage.sync.set({ socialMediasBlockeds });
 };
 
-const handleChangeRestrictionAdultContent = (siteName: string) => {
+const handleChangeRestrictionAdultContent = async (siteName: string) => {
     const site = adultContentBlocked.value.find(
         (site) => site.siteName === siteName
     );
@@ -114,9 +115,10 @@ const handleChangeRestrictionAdultContent = (siteName: string) => {
     adultContentBlocked.value.find(
         (site) => site.siteName === siteName
     )!.restricted = site.restricted;
+    await chrome.storage.sync.set({ adultContentBlocked });
 };
 
-const handleChangeRestrictionBets = (siteName: string) => {
+const handleChangeRestrictionBets = async (siteName: string) => {
     const site = betsBlocked.value.find((site) => site.siteName === siteName);
 
     if (!site) {
@@ -128,6 +130,8 @@ const handleChangeRestrictionBets = (siteName: string) => {
 
     betsBlocked.value.find((site) => site.siteName === siteName)!.restricted =
         site.restricted;
+
+    await chrome.storage.sync.set({ betsBlocked });
 };
 
 const isURLBlocked = (websiteURL: string): boolean => {
@@ -136,9 +140,12 @@ const isURLBlocked = (websiteURL: string): boolean => {
 
     console.log(`websiteURL: ${websiteURL}`);
 
-    helper = websites.adultContent.find((ac) =>
-        websiteURL.toLowerCase().includes(ac.siteURL.toLowerCase())
-    )
+    helper = websites.adultContent.find((ac) => {
+        return (
+            websiteURL.toLowerCase().startsWith(ac.siteURL.toLowerCase()) &&
+            isRestrictedAdultContent(ac.siteName)
+        );
+    })
         ? true
         : false;
 
@@ -146,9 +153,12 @@ const isURLBlocked = (websiteURL: string): boolean => {
 
     if (helper) isBlocked = true;
 
-    helper = websites.bets.find((bet) =>
-        websiteURL.toLowerCase().includes(bet.siteURL.toLowerCase())
-    )
+    helper = websites.bets.find((bet) => {
+        return (
+            websiteURL.toLowerCase().startsWith(bet.siteURL.toLowerCase()) &&
+            isRestrictedBets(bet.siteName)
+        );
+    })
         ? true
         : false;
 
@@ -156,9 +166,12 @@ const isURLBlocked = (websiteURL: string): boolean => {
 
     if (helper) isBlocked = true;
 
-    helper = websites.socialMedias.find((sm) =>
-        websiteURL.toLowerCase().includes(sm.siteURL.toLowerCase())
-    )
+    helper = websites.socialMedias.find((sm) => {
+        return (
+            websiteURL.toLowerCase().startsWith(sm.siteURL.toLowerCase()) &&
+            isRestrictedSocialMedia(sm.siteName)
+        );
+    })
         ? true
         : false;
 
@@ -173,55 +186,65 @@ const websites = {
     socialMedias: [
         {
             siteName: "Tiktok",
-            siteURL: "https://tiktok.com",
+            siteURL: "https://www.tiktok.com/",
             logo: TiktokLogo,
         },
         {
             siteName: "Instagram",
-            siteURL: "https://intagram.com",
+            siteURL: "https://www.instagram.com/",
             logo: InstagramLogo,
         },
         {
             siteName: "Instagram (reels)",
-            siteURL: "https://instagram.com/reels",
+            siteURL: "https://www.instagram.com/reels/",
             logo: InstagramLogo,
         },
         {
             siteName: "Twitter / X",
-            siteURL: "https://x.com",
+            siteURL: "https://x.com/",
             logo: TwitterLogo,
         },
         {
             siteName: "Telegram",
-            siteURL: "https://web.telegram.org",
+            siteURL: "https://web.telegram.org/",
             logo: TelegramLogo,
         },
         {
             siteName: "Youtube (Shorts)",
-            siteURL: "https://youtube.com/shorts",
+            siteURL: "https://www.youtube.com/shorts/",
             logo: YoutubeLogo,
         },
     ],
     adultContent: [
         {
             siteName: "Xvideos",
-            siteURL: "https://xvideos.com",
+            siteURL: "https://www.xvideos.com/",
             logo: XvideosLogo,
         },
         {
+            siteName: "PornHub PT",
+            siteURL: "https://pt.pornhub.com/",
+            logo: PornhubLogo,
+        },
+        {
             siteName: "PornHub",
-            siteURL: "https://pornhub.com",
+            siteURL: "https://www.pornhub.com/",
             logo: PornhubLogo,
         },
         {
             siteName: "CameraPrive",
-            siteURL: "https://cameraprive.com",
+            siteURL: "https://www.cameraprive.com/",
             logo: CameraPriveLogo,
         },
         {
             siteName: "OnlyFans",
-            siteURL: "https://onlyfans.com",
+            siteURL: "https://www.onlyfans.com/",
             logo: OnlyfansLogo,
+        },
+        {
+            siteName: "EroMe",
+            siteURL: "https://www.erome.com/",
+            logo: EroMeLogo,
         },
     ],
     bets: [
@@ -232,37 +255,37 @@ const websites = {
         },
         {
             siteName: "Betano BR",
-            siteURL: "https://br.betano.com",
+            siteURL: "https://br.betano.com/",
             logo: BetanoLogo,
         },
         {
             siteName: "Betano",
-            siteURL: "https://betano.com",
+            siteURL: "https://www.betano.com/",
             logo: BetanoLogo,
         },
         {
             siteName: "Tigrinho",
-            siteURL: "https://cassinopix.com",
+            siteURL: "https://www.cassinopix.com/",
             logo: TigrinhoLogo,
         },
         {
             siteName: "Betfair",
-            siteURL: "https://betfair.com",
+            siteURL: "https://www.betfair.com/",
             logo: BetfairLogo,
         },
         {
             siteName: "KTO",
-            siteURL: "https://kto.com",
+            siteURL: "https://www.kto.com/",
             logo: KTOLogo,
         },
         {
             siteName: "Blaze",
-            siteURL: "https://blaze.com",
+            siteURL: "https://www.blaze.com/",
             logo: BlazeLogo,
         },
         {
             siteName: "Blaze Space1",
-            siteURL: "https://blaze1.space",
+            siteURL: "https://blaze1.space/",
             logo: BlazeLogo,
         },
     ],
@@ -277,4 +300,5 @@ export {
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
     isURLBlocked,
+    startSyncData,
 };

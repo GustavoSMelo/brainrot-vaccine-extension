@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "description": "Extension created to prevent yourself to access vicious websites that is injuring our attention and our brain.",
     "background": {
-        "service_worker": "service-worker.js",
+        "service_worker": "assets/service-worker.js",
         "type": "module"
     },
     "action": {
@@ -16,12 +16,6 @@
         "48": "gubgub.png",
         "128": "gubgub.png"
     },
-    "permissions": ["scripting", "tabs", "activeTab", "webNavigation"],
-    "host_permissions": ["<all_urls>"],
-    "content_scripts": [
-        {
-            "matches": ["<all_urls>"],
-            "js": ["content.js"]
-        }
-    ]
+    "permissions": ["scripting", "tabs", "activeTab", "webNavigation", "storage"],
+    "host_permissions": ["<all_urls>"]
 }
