@@ -5,9 +5,10 @@ import ExtensionIntroduction from "./ExtensionIntroduction.vue";
 import FooterContent from "./FooterContent.vue";
 import SocialMedias from "./SocialMedias.vue";
 import { startSyncData } from '../helpers/websites';
-import { onBeforeMount } from 'vue';
+import { onMounted } from 'vue';
 
-onBeforeMount(async () => {
+onMounted(async () => {
+    console.log('component mounted');
     await startSyncData();
 });
 

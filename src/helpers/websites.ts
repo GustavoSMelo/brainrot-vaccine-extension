@@ -24,11 +24,15 @@ import {
 } from "../helpers/getSyncStorageDatas";
 
 import { ref } from "vue";
-import { adultContentInitialState, betsInitialState, socialMediasInitialState } from "./initialStates";
+import {
+    adultContentInitialState,
+    betsInitialState,
+    socialMediasInitialState,
+} from "./initialStates";
 
-const socialMediasBlockeds = ref([ ...socialMediasInitialState ]);
-const adultContentBlocked = ref([ ...adultContentInitialState ]);
-const betsBlocked = ref([ ...betsInitialState ]);
+const socialMediasBlockeds = ref([...socialMediasInitialState]);
+const adultContentBlocked = ref([...adultContentInitialState]);
+const betsBlocked = ref([...betsInitialState]);
 
 const startSyncData = async () => {
     const socialMediasHelper = await getSocialMediasBlocked();
@@ -37,20 +41,18 @@ const startSyncData = async () => {
 
     console.log(socialMediasHelper);
     console.log(adultMediasHelper);
-    console.log(betsBlockedHelper);
 
-    socialMediasBlockeds.value = socialMediasHelper;
-    adultContentBlocked.value = adultMediasHelper;
-    betsBlocked.value = betsBlockedHelper;
+    socialMediasBlockeds.value = [...socialMediasHelper];
+    adultContentBlocked.value = [...adultMediasHelper];
+    betsBlocked.value = [...betsBlockedHelper];
 };
 
 const isRestrictedSocialMedia = (siteName: string) => {
     const site = socialMediasBlockeds.value.find(
-        (site) => site.siteName === siteName
+        (site) => site.siteName === siteName && site.restricted
     );
 
-    if (!site) {
-        console.error("error");
+    if (!site || site === null || site === undefined) {
         return false;
     }
 
@@ -58,10 +60,11 @@ const isRestrictedSocialMedia = (siteName: string) => {
 };
 
 const isRestrictedBets = (siteName: string) => {
-    const site = betsBlocked.value.find((site) => site.siteName === siteName);
+    const site = betsBlocked.value.find(
+        (site) => site.siteName === siteName && site.restricted
+    );
 
-    if (!site) {
-        console.error("error");
+    if (!site || site === null || site === undefined) {
         return false;
     }
 
@@ -70,11 +73,10 @@ const isRestrictedBets = (siteName: string) => {
 
 const isRestrictedAdultContent = (siteName: string) => {
     const site = adultContentBlocked.value.find(
-        (site) => site.siteName === siteName
+        (site) => site.siteName === siteName && site.restricted
     );
 
-    if (!site) {
-        console.error("error");
+    if (!site || site === null || site === undefined) {
         return false;
     }
 
@@ -86,7 +88,7 @@ const handleChangeRestrictionSocialMedia = async (siteName: string) => {
         (site) => site.siteName === siteName
     );
 
-    if (!site) {
+    if (!site || site === null || site === undefined) {
         console.error("error");
         return;
     }
@@ -97,7 +99,9 @@ const handleChangeRestrictionSocialMedia = async (siteName: string) => {
         (site) => site.siteName === siteName
     )!.restricted = site.restricted;
 
-    await chrome.storage.sync.set({ socialMediasBlockeds });
+    await chrome.storage.sync.set({
+        socialMediasBlocked: [...socialMediasBlockeds.value],
+    });
 };
 
 const handleChangeRestrictionAdultContent = async (siteName: string) => {
@@ -105,7 +109,7 @@ const handleChangeRestrictionAdultContent = async (siteName: string) => {
         (site) => site.siteName === siteName
     );
 
-    if (!site) {
+    if (!site || site === null || site === undefined) {
         console.error("error");
         return;
     }
@@ -115,13 +119,16 @@ const handleChangeRestrictionAdultContent = async (siteName: string) => {
     adultContentBlocked.value.find(
         (site) => site.siteName === siteName
     )!.restricted = site.restricted;
-    await chrome.storage.sync.set({ adultContentBlocked });
+
+    await chrome.storage.sync.set({
+        adultContentBlocked: [...adultContentBlocked.value],
+    });
 };
 
 const handleChangeRestrictionBets = async (siteName: string) => {
     const site = betsBlocked.value.find((site) => site.siteName === siteName);
 
-    if (!site) {
+    if (!site || site === null || site === undefined) {
         console.error("error");
         return;
     }
@@ -131,14 +138,12 @@ const handleChangeRestrictionBets = async (siteName: string) => {
     betsBlocked.value.find((site) => site.siteName === siteName)!.restricted =
         site.restricted;
 
-    await chrome.storage.sync.set({ betsBlocked });
+    await chrome.storage.sync.set({ betsBlocked: [...betsBlocked.value] });
 };
 
 const isURLBlocked = (websiteURL: string): boolean => {
     let isBlocked = false;
     let helper = false;
-
-    console.log(`websiteURL: ${websiteURL}`);
 
     helper = websites.adultContent.find((ac) => {
         return (
@@ -148,8 +153,6 @@ const isURLBlocked = (websiteURL: string): boolean => {
     })
         ? true
         : false;
-
-    console.log(`helper02: ${helper}`);
 
     if (helper) isBlocked = true;
 
@@ -162,8 +165,6 @@ const isURLBlocked = (websiteURL: string): boolean => {
         ? true
         : false;
 
-    console.log(`helper03: ${helper}`);
-
     if (helper) isBlocked = true;
 
     helper = websites.socialMedias.find((sm) => {
@@ -174,8 +175,6 @@ const isURLBlocked = (websiteURL: string): boolean => {
     })
         ? true
         : false;
-
-    console.log(`helper04: ${helper}`);
 
     if (helper) isBlocked = true;
 

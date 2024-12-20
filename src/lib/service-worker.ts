@@ -8,19 +8,13 @@ import {
 import { isURLBlocked } from "../helpers/websites";
 
 chrome.webNavigation.onCompleted.addListener((details) => {
-    chrome.tabs.get(details.tabId, async (tab) => {
-        console.log(tab);
+    chrome.tabs.get(details.tabId, async (/* tab */) => {
         const { tabURL, tabId }: { tabURL: string; tabId: number } =
             await getCurrentTabURL();
-
-        console.log(`Vue URL: ${tabURL}`);
-        console.log(`BlockedURL: ${isURLBlocked(tabURL)}`);
 
         if (isURLBlocked(tabURL)) {
             blockerWebsite(tabId);
         }
-
-        console.log(`Passed`);
     });
 });
 
