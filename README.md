@@ -1,6 +1,6 @@
 <h1>Brainrot Vaccine Extension</h1>
 
-<img src="./dist/gubgub.png" />
+<img src="./public/gubgub.png" />
 <br />
 
 Extension created to prevent yourself to access vicious websites that is injuring our attention and our brain.
