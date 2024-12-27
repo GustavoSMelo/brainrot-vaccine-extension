@@ -3,19 +3,33 @@
     "name": "Brainrot Vaccine",
     "version": "1.0.0",
     "description": "Extension created to prevent yourself to access vicious websites that is injuring our attention and our brain.",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "gsantos15569.dev@gmail.com"
+        }
+    },
     "background": {
+        "scripts": ["assets/service-worker.js"],
         "service_worker": "assets/service-worker.js",
         "type": "module"
     },
     "action": {
         "default_popup": "index.html",
-        "default_icon": "gubgub.png"
+        "default_icon": "gubgubsquare.png"
     },
     "icons": {
-        "16": "gubgub.png",
-        "48": "gubgub.png",
-        "128": "gubgub.png"
+        "16": "gubgubsquare.png",
+        "48": "gubgubsquare.png",
+        "128": "gubgubsquare.png"
     },
-    "permissions": ["scripting", "tabs", "activeTab", "webNavigation", "storage"],
-    "host_permissions": ["<all_urls>"]
+    "permissions": [
+        "scripting",
+        "tabs",
+        "activeTab",
+        "webNavigation",
+        "storage"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ]
 }
