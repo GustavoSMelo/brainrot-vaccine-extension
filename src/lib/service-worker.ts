@@ -11,8 +11,9 @@ chrome.webNavigation.onCompleted.addListener((details) => {
     chrome.tabs.get(details.tabId, async (/* tab */) => {
         const { tabURL, tabId }: { tabURL: string; tabId: number } =
             await getCurrentTabURL();
+        const isUrlBlocked = await isURLBlocked(tabURL);
 
-        if (isURLBlocked(tabURL)) {
+        if (isUrlBlocked) {
             blockerWebsite(tabId);
         }
     });

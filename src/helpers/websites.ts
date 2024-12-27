@@ -39,15 +39,13 @@ const startSyncData = async () => {
     const adultMediasHelper = await getAdultContentBlocked();
     const betsBlockedHelper = await getBetsBlocked();
 
-    console.log(socialMediasHelper);
-    console.log(adultMediasHelper);
-
     socialMediasBlockeds.value = [...socialMediasHelper];
     adultContentBlocked.value = [...adultMediasHelper];
     betsBlocked.value = [...betsBlockedHelper];
 };
 
-const isRestrictedSocialMedia = (siteName: string) => {
+const isRestrictedSocialMedia = async (siteName: string) => {
+    await startSyncData();
     const site = socialMediasBlockeds.value.find(
         (site) => site.siteName === siteName && site.restricted
     );
@@ -59,7 +57,8 @@ const isRestrictedSocialMedia = (siteName: string) => {
     return site.restricted;
 };
 
-const isRestrictedBets = (siteName: string) => {
+const isRestrictedBets = async (siteName: string) => {
+    await startSyncData();
     const site = betsBlocked.value.find(
         (site) => site.siteName === siteName && site.restricted
     );
@@ -71,9 +70,10 @@ const isRestrictedBets = (siteName: string) => {
     return site.restricted;
 };
 
-const isRestrictedAdultContent = (siteName: string) => {
+const isRestrictedAdultContent = async (siteName: string) => {
+    await startSyncData();
     const site = adultContentBlocked.value.find(
-        (site) => site.siteName === siteName && site.restricted
+        (site) => site.siteName.toLowerCase() === siteName.toLowerCase() && site.restricted
     );
 
     if (!site || site === null || site === undefined) {
@@ -141,44 +141,35 @@ const handleChangeRestrictionBets = async (siteName: string) => {
     await chrome.storage.sync.set({ betsBlocked: [...betsBlocked.value] });
 };
 
-const isURLBlocked = (websiteURL: string): boolean => {
-    let isBlocked = false;
-    let helper = false;
-
-    helper = websites.adultContent.find((ac) => {
-        return (
+const isURLBlocked = async (websiteURL: string): Promise<boolean> => {
+    for (const ac of websites.adultContent) {
+        if (
             websiteURL.toLowerCase().startsWith(ac.siteURL.toLowerCase()) &&
-            isRestrictedAdultContent(ac.siteName)
-        );
-    })
-        ? true
-        : false;
+            await isRestrictedAdultContent(ac.siteName)
+        ) {
+            return true;
+        }
+    }
 
-    if (helper) isBlocked = true;
-
-    helper = websites.bets.find((bet) => {
-        return (
+    for (const bet of websites.bets) {
+        if (
             websiteURL.toLowerCase().startsWith(bet.siteURL.toLowerCase()) &&
-            isRestrictedBets(bet.siteName)
-        );
-    })
-        ? true
-        : false;
+            await isRestrictedBets(bet.siteName)
+        ) {
+            return true;
+        }
+    }
 
-    if (helper) isBlocked = true;
-
-    helper = websites.socialMedias.find((sm) => {
-        return (
+    for (const sm of websites.socialMedias) {
+        if (
             websiteURL.toLowerCase().startsWith(sm.siteURL.toLowerCase()) &&
-            isRestrictedSocialMedia(sm.siteName)
-        );
-    })
-        ? true
-        : false;
+            await isRestrictedSocialMedia(sm.siteName)
+        ) {
+            return true;
+        }
+    }
 
-    if (helper) isBlocked = true;
-
-    return isBlocked;
+    return false;
 };
 
 const websites = {

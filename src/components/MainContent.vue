@@ -8,7 +8,6 @@ import { startSyncData } from '../helpers/websites';
 import { onMounted } from 'vue';
 
 onMounted(async () => {
-    console.log('component mounted');
     await startSyncData();
 });
 
