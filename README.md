@@ -18,10 +18,13 @@ Extension created to prevent yourself to access vicious websites that is injurin
         <td>
             <img src="./.github/assets/opera-svgrepo-com.svg" width="20px" height="20px" /><br />Opera
         </td>
-                <td>
+        <td>
             <img src="./.github/assets/brave-svgrepo-com.svg" width="20px" height="20px" /><br />Brave
         </td>
-                <td>
+        <td>
+            <img src="./.github/assets/edge-svgrepo-com.svg" width="20px" height="20px" /><br />Edge
+        </td>
+        <td>
             <img src="./.github/assets/vivaldi-icon-svgrepo-com.svg" width="20px" height="20px" /><br />Vivaldi
         </td>
         <td>
@@ -41,10 +44,13 @@ Extension created to prevent yourself to access vicious websites that is injurin
         <td>
             <img src="./.github/assets/check.png" alt="check icon" width="30px" height="30px" />
         </td>
-                <td>
+        <td>
             <img src="./.github/assets/check.png" alt="check icon" width="30px" height="30px" />
         </td>
                 <td>
+            <img src="./.github/assets/check.png" alt="check icon" width="30px" height="30px" />
+        </td>
+        <td>
             <img src="./.github/assets/check.png" alt="check icon" width="30px" height="30px" />
         </td>
         <td>
