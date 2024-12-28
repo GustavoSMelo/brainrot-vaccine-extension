@@ -27,6 +27,9 @@ const socialMediasInitialState = [
     { siteName: "Twitter / X", restricted: true },
     { siteName: "Telegram", restricted: true },
     { siteName: "Youtube (Shorts)", restricted: true },
+    { siteName: "Youtube", restricted: false },
+    { siteName: "Twitch", restricted: false },
+    { siteName: "Reddit", restricted: false }
 ] as Array<IRestricted>;
 
 export { betsInitialState, adultContentInitialState, socialMediasInitialState };

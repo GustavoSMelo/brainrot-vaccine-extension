@@ -19,7 +19,7 @@ export default {
             <img src="../assets/github.svg" alt="Github Logo" />
             <p>Developed by Gustavo S. Melo</p>
         </div>
-        <small>Version: 1.0.0 B</small>
+        <small>Version: 1.0.1</small>
     </footer>
 </template>
 

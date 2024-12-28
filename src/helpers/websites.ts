@@ -3,6 +3,8 @@ import InstagramLogo from "../assets/instagram.svg";
 import YoutubeLogo from "../assets/youtube.svg";
 import TwitterLogo from "../assets/twitter.svg";
 import TelegramLogo from "../assets/telegram.svg";
+import TwitchLogo from '../assets/twitch.svg';
+import RedditLogo from '../assets/reddit.svg';
 
 import XvideosLogo from "../assets/xvd.svg";
 import PornhubLogo from "../assets/prnhb.svg";
@@ -204,6 +206,21 @@ const websites = {
             siteURL: "https://www.youtube.com/shorts/",
             logo: YoutubeLogo,
         },
+        {
+            siteName: "Youtube",
+            siteURL: "https://www.youtube.com/",
+            logo: YoutubeLogo
+        },
+        {
+            siteName: "Twitch",
+            siteURL: "https://www.twitch.tv",
+            logo: TwitchLogo,
+        },
+        {
+            siteName: "Reddit",
+            siteURL: "https://www.reddit.com",
+            logo: RedditLogo
+        }
     ],
     adultContent: [
         {
@@ -223,12 +240,12 @@ const websites = {
         },
         {
             siteName: "CameraPrive",
-            siteURL: "https://www.cameraprive.com/",
+            siteURL: "https://cameraprive.com/",
             logo: CameraPriveLogo,
         },
         {
             siteName: "OnlyFans",
-            siteURL: "https://www.onlyfans.com/",
+            siteURL: "https://onlyfans.com/",
             logo: OnlyfansLogo,
         },
         {
@@ -255,7 +272,7 @@ const websites = {
         },
         {
             siteName: "Tigrinho",
-            siteURL: "https://www.cassinopix.com/",
+            siteURL: "https://cassinopix.com/",
             logo: TigrinhoLogo,
         },
         {
@@ -270,7 +287,7 @@ const websites = {
         },
         {
             siteName: "Blaze",
-            siteURL: "https://www.blaze.com/",
+            siteURL: "https://blaze.com/",
             logo: BlazeLogo,
         },
         {
