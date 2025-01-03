@@ -1,14 +1,20 @@
 <script lang="ts">
 import {
+    handleChangeRestrictionAdultContent,
     isRestrictedAdultContent,
     websites,
-    handleChangeRestrictionAdultContent,
 } from "../helpers/websites";
 import { ref, onMounted } from 'vue';
 import { IRestricted } from '../interfaces/restricted';
 
 export default {
-    setup() {
+    props: {
+        handleChangeSessionInformations: {
+            type: Function,
+            required: true,
+        }
+    },
+    setup(props) {
         const websitesData = ref(websites);
         const adultContentRestrictionStates = ref<Array<IRestricted>>([]);
 
@@ -39,7 +45,11 @@ export default {
             adultContentRestrictionStates.value.forEach((ac: IRestricted, index: number) => {
                 if (ac.siteName === siteName) {
                     adultContentRestrictionStates.value[index].restricted = !ac.restricted;
-                    handleChangeRestrictionAdultContent(siteName);
+                    if (!adultContentRestrictionStates.value[index].restricted) {
+                        props.handleChangeSessionInformations('adultContent', ac.siteName);
+                    } else {
+                        handleChangeRestrictionAdultContent(ac.siteName);
+                    }
                 }
             });
         };
@@ -50,7 +60,7 @@ export default {
             websites: websitesData,
             adultContentRestrictionStates,
             handleChangeRestriction,
-            checkAdultContentIsRestricted
+            checkAdultContentIsRestricted,
         };
     },
 };
@@ -63,38 +73,24 @@ export default {
         <section>
             <div v-for="(website, index) in websites.adultContent" :key="index">
                 <figure>
-                    <img
-                        :src="website.logo"
-                        :alt="`${website.siteName} logo`"
-                    />
+                    <img :src="website.logo" :alt="`${website.siteName} logo`" />
 
                     <figcaption>{{ website.siteName }}</figcaption>
                 </figure>
 
-                <label
-                    v-if="checkAdultContentIsRestricted(website.siteName)"
-                    class="switch selected"
-                >
-                    <input
-                        class="btnSwitch"
-                        type="checkbox"
-                        @click="
-                            handleChangeRestriction(
-                                website.siteName
-                            )
-                        "
-                    />
+                <label v-if="checkAdultContentIsRestricted(website.siteName)" class="switch selected">
+                    <input class="btnSwitch" type="checkbox" @click="
+                        handleChangeRestriction(
+                            website.siteName
+                        )
+                        " />
                 </label>
                 <label v-else class="switch">
-                    <input
-                        class="btnSwitch"
-                        type="checkbox"
-                        @click="
-                            handleChangeRestriction(
-                                website.siteName
-                            )
-                        "
-                    />
+                    <input class="btnSwitch" type="checkbox" @click="
+                        handleChangeRestriction(
+                            website.siteName
+                        )
+                        " />
                 </label>
             </div>
         </section>

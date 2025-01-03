@@ -5,5 +5,3 @@ import MainContent from "./components/MainContent.vue";
 <template>
     <MainContent />
 </template>
-
-<style src="./styles/app.style.scss" />

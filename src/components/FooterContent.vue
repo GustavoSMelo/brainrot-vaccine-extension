@@ -1,15 +1,9 @@
-<script lang="ts">
-export default {
-    setup() {
-        const handleLoadProjectRepository = () => {
-            window.open(
-                "https://github.com/GustavoSMelo/brainrot-vaccine-extension",
-                "_blank"
-            );
-        };
-
-        return { handleLoadProjectRepository };
-    },
+<script setup lang="ts">
+const handleLoadProjectRepository = () => {
+    window.open(
+        "https://github.com/GustavoSMelo/brainrot-vaccine-extension",
+        "_blank"
+    );
 };
 </script>
 

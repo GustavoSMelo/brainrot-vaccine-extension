@@ -8,7 +8,13 @@ import { ref, onMounted } from 'vue';
 import { IRestricted } from '../interfaces/restricted';
 
 export default {
-    setup() {
+    props: {
+        handleChangeSessionInformations: {
+            type: Function,
+            required: true
+        }
+    },
+    setup(props) {
         const websitesData = ref(websites);
         const socialMediaRestrictionStates = ref<Array<IRestricted>>([]);
 
@@ -39,7 +45,11 @@ export default {
             socialMediaRestrictionStates.value.forEach((sm: IRestricted, index: number) => {
                 if (sm.siteName === siteName) {
                     socialMediaRestrictionStates.value[index].restricted = !sm.restricted;
-                    handleChangeRestrictionSocialMedia(siteName);
+                    if (!socialMediaRestrictionStates.value[index].restricted) {
+                        props.handleChangeSessionInformations('socialMedias', sm.siteName);
+                    } else {
+                        handleChangeRestrictionSocialMedia(sm.siteName);
+                    }
                 }
             });
         };
@@ -50,7 +60,7 @@ export default {
             websites: websitesData,
             socialMediaRestrictionStates,
             handleChangeRestriction,
-            checkSocialMediaIsRestricted
+            checkSocialMediaIsRestricted,
         };
     },
 };

@@ -4,7 +4,13 @@ import { ref, onMounted } from 'vue';
 import { IRestricted } from '../interfaces/restricted';
 
 export default {
-    setup() {
+    props: {
+        handleChangeSessionInformations: {
+            type: Function,
+            required: true,
+        }
+    },
+    setup(props) {
         const websitesData = ref(websites);
         const bettingHouseRestrictionStates = ref<Array<IRestricted>>([]);
 
@@ -35,7 +41,11 @@ export default {
             bettingHouseRestrictionStates.value.forEach((bet: IRestricted, index: number) => {
                 if (bet.siteName === siteName) {
                     bettingHouseRestrictionStates.value[index].restricted = !bet.restricted;
-                    handleChangeRestrictionBets(siteName);
+                    if (!bettingHouseRestrictionStates.value[index].restricted) {
+                        props.handleChangeSessionInformations('bettingHouse', bet.siteName);
+                    } else {
+                        handleChangeRestrictionBets(bet.siteName);
+                    }
                 }
             });
         };
@@ -46,7 +56,7 @@ export default {
             websites: websitesData,
             bettingHouseRestrictionStates,
             handleChangeRestriction,
-            checkBettingHouseIsRestricted
+            checkBettingHouseIsRestricted,
         };
     },
 };

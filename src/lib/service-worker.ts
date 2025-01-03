@@ -20,7 +20,6 @@ chrome.webNavigation.onCompleted.addListener((details) => {
 });
 
 chrome.runtime.onInstalled.addListener(async () => {
-    // await chrome.storage.sync.set({ websites });
     await chrome.storage.sync.set({
         socialMediasBlocked: [...socialMediasInitialState],
     });
