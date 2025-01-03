@@ -62,6 +62,10 @@ Extension created to prevent yourself to access vicious websites that is injurin
     </tr>
 </table>
 
+<h2>Extension working: </h2>
+
+<img src="./.github/assets/brv.gif" alt="Gif that shows how extension works"/>
+
 <h2>Section for developers: </h2>
 
 <h2>💻 What I need to have installed in my pc ?</h2>
