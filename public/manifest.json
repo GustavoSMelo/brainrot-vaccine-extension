@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Brainrot Vaccine",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Extension created to prevent yourself to access vicious websites that is injuring our attention and our brain.",
     "browser_specific_settings": {
         "gecko": {

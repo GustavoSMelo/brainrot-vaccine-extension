@@ -11,7 +11,7 @@ const props = defineProps({
     handleClearSiteSelected: { type: Function, required: true },
 });
 
-const timer = ref(5);
+const timer = ref(30);
 const intervalId = setInterval(async () => {
     timer.value = timer.value - 1;
     await nextTick();
