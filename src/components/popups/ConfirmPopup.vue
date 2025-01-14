@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { defineProps, nextTick, ref, watch } from "vue";
+import { nextTick, ref, watch } from "vue";
 import {
     handleChangeRestrictionAdultContent,
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
-} from "../helpers/websites";
+} from "../../helpers/websites";
+
 const props = defineProps({
     siteName: { type: String, required: true },
     siteSessionName: { type: String, required: true },
@@ -17,9 +18,7 @@ const intervalId = setInterval(async () => {
     await nextTick();
 }, 1000);
 
-const isTimerEnded = (): boolean => {
-    return timer.value <= 0 ? true : false;
-};
+const isTimerEnded = (): boolean => (timer.value <= 0 ? true : false);
 
 const handleDisableWebsiteRestriction = (): void => {
     switch (props.siteSessionName) {
@@ -33,7 +32,7 @@ const handleDisableWebsiteRestriction = (): void => {
             handleChangeRestrictionBets(props.siteName);
             break;
         default:
-            console.error("Erro to set sessionName");
+            console.error("Error to set sessionName");
             break;
     }
 
@@ -43,7 +42,6 @@ const handleDisableWebsiteRestriction = (): void => {
 watch(timer, () => {
     if (isTimerEnded()) clearInterval(intervalId);
 });
-
 </script>
 
 <template>
@@ -71,4 +69,4 @@ watch(timer, () => {
     </div>
 </template>
 
-<style src="../styles/components/confirmPopup.style.scss" scoped />
+<style src="../../styles/components/confirmPopup.style.scss" scoped />

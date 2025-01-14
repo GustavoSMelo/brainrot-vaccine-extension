@@ -3,6 +3,7 @@ import getCurrentTabURL from "../helpers/getCurrentTab";
 import {
     adultContentInitialState,
     betsInitialState,
+    customWebsitesInitialState,
     socialMediasInitialState,
 } from "../helpers/initialStates";
 import { isURLBlocked } from "../helpers/websites";
@@ -28,5 +29,8 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
     await chrome.storage.sync.set({
         betsBlocked: [...betsInitialState],
+    });
+    await chrome.storage.sync.set({
+        customWebsites: [...customWebsitesInitialState]
     });
 });
