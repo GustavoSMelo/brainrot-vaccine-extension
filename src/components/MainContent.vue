@@ -5,23 +5,25 @@ import BettingHouse from "./BettingHouse.vue";
 import ExtensionIntroduction from "./ExtensionIntroduction.vue";
 import FooterContent from "./FooterContent.vue";
 import SocialMedias from "./SocialMedias.vue";
-import ConfirmPopup from "./popups/ConfirmPopup.vue";
+import DisableBlockerPopup from "./popups/DisableBlockerPopup.vue";
 import HandleCustomBlocker from "./popups/HandleCustomBlocker.vue";
 import StatusPopup from "./popups/StatusPopup.vue";
 import { startSyncData } from "../helpers/websites";
 import { IRestricted } from "../interfaces/restricted";
 import { getCustomWebsitesBlocked } from "../helpers/getSyncStorageDatas";
 import CustomWebsites from "./CustomWebsites.vue";
+import ConfirmDeleteCustomPopup from "./popups/ConfirmDeleteCustomPopup.vue";
 
 const siteSessionName = ref("");
 const siteName = ref("");
 const isRenderHandleCustomBlockerPopup = ref(false);
+const isRenderHandleConfirmDeleteCustomPopup = ref(true);
 const popupStatus = ref<"success" | "error">("success");
 const popupMessage = ref("");
 const shouldRenderPopupStatus = ref(0);
 const customWebsites = ref<Array<IRestricted>>([]);
-const selectedCustomWebsiteName = ref('');
-const selectedCustomWebsiteURL = ref('');
+const selectedCustomWebsiteName = ref("");
+const selectedCustomWebsiteURL = ref("");
 const selectedCustomWebsiteIndex = ref(-1);
 
 const handleRenderHandleCustomBlocker = (): void => {
@@ -29,11 +31,17 @@ const handleRenderHandleCustomBlocker = (): void => {
         !isRenderHandleCustomBlockerPopup.value;
 };
 
+const shouldRenderConfirmDeleteCustomPopup = (): boolean => {
+    if (!isRenderHandleConfirmDeleteCustomPopup.value) return false;
+
+    return true;
+};
+
 const shouldRenderCreateCustomerBlock = (): boolean => {
     if (!isRenderHandleCustomBlockerPopup.value) return false;
     return true;
 };
-const shouldRenderConfirmPopup = (): boolean => {
+const shouldRenderDisableBlockerPopup = (): boolean => {
     if (!siteSessionName.value || !siteName.value) return false;
     return true;
 };
@@ -57,8 +65,13 @@ const handleChangePopupMessage = (message: string) => {
     popupMessage.value = message;
 };
 
-const handleChangePopupStatus = (status: 'success' | 'error') => {
+const handleChangePopupStatus = (status: "success" | "error") => {
     popupStatus.value = status;
+};
+
+const handleRenderConfirmDeleteCustomPopup = () => {
+    isRenderHandleConfirmDeleteCustomPopup.value =
+        !isRenderHandleConfirmDeleteCustomPopup.value;
 };
 
 const checkIfShouldRenderPopupStatus = (): boolean =>
@@ -70,7 +83,6 @@ setInterval(() => {
     }
 }, 5000);
 
-
 onMounted(async () => {
     await startSyncData();
     const helper = await getCustomWebsitesBlocked();
@@ -79,11 +91,25 @@ onMounted(async () => {
 </script>
 
 <template>
-    <ConfirmPopup
-        v-if="shouldRenderConfirmPopup()"
+    <DisableBlockerPopup
+        v-if="shouldRenderDisableBlockerPopup()"
         :siteName="siteName"
         :siteSessionName="siteSessionName"
         :handleClearSiteSelected="handleClearSiteSelected"
+    />
+
+    <ConfirmDeleteCustomPopup
+        v-if="shouldRenderConfirmDeleteCustomPopup()"
+        :handleRenderConfirmDeleteCustomPopup="
+            handleRenderConfirmDeleteCustomPopup
+        "
+        :handleChangePopupMessage="handleChangePopupMessage"
+        :handleChangePopupStatus="handleChangePopupStatus"
+        :handleChangeShouldRenderPopupStatus="
+            handleChangeShouldRenderPopupStatus
+        "
+        :siteName="selectedCustomWebsiteName"
+        :siteIndex="selectedCustomWebsiteIndex"
     />
 
     <HandleCustomBlocker
@@ -126,7 +152,11 @@ onMounted(async () => {
         <BettingHouse
             :handleChangeSessionInformations="handleChangeSessionInformations"
         />
-        <CustomWebsites />
+        <CustomWebsites
+            :handleRenderConfirmDeleteCustomPopup="
+                handleRenderConfirmDeleteCustomPopup
+            "
+        />
     </main>
     <FooterContent />
 </template>

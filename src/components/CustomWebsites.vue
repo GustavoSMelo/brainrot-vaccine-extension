@@ -5,6 +5,13 @@ import { getCustomWebsitesBlocked } from "../helpers/getSyncStorageDatas";
 import { onMounted, ref } from "vue";
 import { IRestrictedCustom } from "../interfaces/restricted";
 
+const props = defineProps({
+    handleRenderConfirmDeleteCustomPopup: {
+        type: Function,
+        required: true
+    }
+});
+
 const websites = ref<Array<IRestrictedCustom>>([]);
 
 onMounted(async () => {
@@ -18,24 +25,25 @@ onMounted(async () => {
     <details open>
         <summary aria-controls="socialmedia-content">Customs</summary>
 
-        <section>
-            <div class="customWebsiteContainer" v-if="websites.length > 0">
+        <section v-if="websites.length > 0">
+            <div v-for="(website, index) in websites" :key="index" class="customWebsiteContainer">
                 <figure>
                     <img :src="Globe" alt="website custom logo" />
 
-                    <figcaption>Teste</figcaption>
+                    <figcaption>{{ website.siteName }}</figcaption>
                 </figure>
 
                 <span class="controlButtonContainer">
-                    <button class="btnDelete" type="button">Delete</button>
+                    <button class="btnDelete" type="button" @click="props.handleRenderConfirmDeleteCustomPopup()">Delete</button>
                     <button class="btnEdit" type="button">Edit</button>
                     <label class="switch selected">
                         <input class="btnSwitch" type="checkbox" />
                     </label>
                 </span>
             </div>
-
-            <span class="emptyCustomWebsiteContainer" v-else>
+        </section>
+        <section v-else>
+            <span class="emptyCustomWebsiteContainer">
                 <figure>
                     <img :src="Ghost" alt="ghost" />
 
