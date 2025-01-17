@@ -163,24 +163,6 @@ const handleChangeRestrictionBets = async (siteName: string) => {
     await chrome.storage.sync.set({ betsBlocked: [...betsBlocked.value] });
 };
 
-const handleChangeWebsiteCustomRestriction = async (siteName: string) => {
-    const websitesCustom = await getCustomWebsitesBlocked();
-
-    const site = websitesCustom.find((site) => site.siteName === siteName);
-
-    if (!site || site === null || site === undefined) {
-        console.error("error");
-        return;
-    }
-
-    site.restricted = !site.restricted;
-
-    websitesCustom.find((site) => site.siteName === siteName)!.restricted =
-        site.restricted;
-
-    await chrome.storage.sync.set({ CustomWebsites: [...websitesCustom] });
-};
-
 const handleChangeWebsiteCustom = async (
     websiteCustom: Array<IRestrictedCustom>
 ) => {
@@ -361,7 +343,6 @@ export {
     handleChangeRestrictionAdultContent,
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
-    handleChangeWebsiteCustomRestriction,
     handleChangeWebsiteCustom,
     isURLBlocked,
     startSyncData,

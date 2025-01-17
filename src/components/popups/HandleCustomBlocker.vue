@@ -38,12 +38,12 @@ const props = defineProps({
     },
     choosedWebsiteURL: {
         type: String,
-        required: true
-    }
+        required: true,
+    },
 });
 
-const websiteName = ref(props.choosedWebsiteName ?? '');
-const websiteURL = ref(props.choosedWebsiteURL ?? '');
+const websiteName = ref(props.choosedWebsiteName ?? "");
+const websiteURL = ref(props.choosedWebsiteURL ?? "");
 
 const handleChangeWebsiteName = (siteName: string): void => {
     websiteName.value = siteName;
@@ -54,6 +54,28 @@ const handleChangeWebsiteURL = (siteURL: string): void => {
 };
 
 const handleClickButton = async () => {
+    if (
+        !websiteURL.value.includes(".com") ||
+        !websiteURL.value.includes(".org") ||
+        !websiteURL.value.includes(".net") ||
+        !websiteURL.value.includes("https") ||
+        !websiteURL.value.includes("http")
+    ) {
+        props.handleChangePopupStatus("error");
+        props.handleChangePopupMessage("Website url invalid !");
+        props.handleChangeShouldRenderPopupStatus();
+
+        return;
+    }
+
+    if (websiteName.value.length <= 0) {
+        props.handleChangePopupStatus("error");
+        props.handleChangePopupMessage("Website name invalid !");
+        props.handleChangeShouldRenderPopupStatus();
+
+        return;
+    }
+
     const helper = await getCustomWebsitesBlocked();
 
     if (props.isEditOrCreation === "create") {
@@ -79,9 +101,7 @@ const handleClickButton = async () => {
             props.handleChangePopupMessage("Error to create a blocker");
             props.handleChangeShouldRenderPopupStatus();
         }
-    }
-
-    else if (props.isEditOrCreation === 'edit') {
+    } else if (props.isEditOrCreation === "edit") {
         try {
             helper[props.websiteIndex].siteName = websiteName.value;
             helper[props.websiteIndex].siteURL = websiteURL.value;
@@ -91,6 +111,8 @@ const handleClickButton = async () => {
             props.handleChangePopupStatus("success");
             props.handleChangePopupMessage("Blocker edited with success");
             props.handleChangeShouldRenderPopupStatus();
+            props.handleRemountCustomWebsites();
+            props.handleRenderHandleCustomBlocker();
         } catch (error) {
             console.error(error);
         }
@@ -104,7 +126,13 @@ const handleClickButton = async () => {
         @click="props.handleRenderHandleCustomBlocker()"
     >
         <form class="createCustomerBlockerContainer" @click.stop>
-            <h2>Create blocker</h2>
+            <h2>{{ props.isEditOrCreation }} blocker</h2>
+
+            <h4>
+                Make sure to add full URL path (using https:// and www if the
+                site has)!
+            </h4>
+            <hr />
 
             <span>
                 <label>Website name: </label>
@@ -125,7 +153,7 @@ const handleClickButton = async () => {
             </span>
 
             <button @click="handleClickButton()" type="button">
-                {{ isEditOrCreation }} blocker
+                {{ props.isEditOrCreation }} blocker
             </button>
         </form>
     </section>

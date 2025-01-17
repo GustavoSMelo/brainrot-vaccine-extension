@@ -19,10 +19,16 @@ main {
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: 0.5s;
 
         & img {
             width: 25px;
             margin-right: 10px;
+        }
+
+        &:hover {
+            transition: 0.5s;
+            background-color: #5bb06f;
         }
     }
 }
@@ -140,33 +146,33 @@ details {
             }
 
             .btnDelete {
-                background-color: #FE2E2E;
+                background-color: #fe2e2e;
                 color: #000;
-                border: solid 2px #FE2E2E;
-                transition: .5s;
+                border: solid 2px #fe2e2e;
+                transition: 0.5s;
 
                 &:hover {
-                    transition: .5s;
+                    transition: 0.5s;
                     background-color: #252525;
-                    color: #FE2E2E;
-                    fill: #FE2E2E;
+                    color: #fe2e2e;
+                    fill: #fe2e2e;
 
                     img {
-                        fill: #FE2E2E;
+                        fill: #fe2e2e;
                     }
                 }
             }
 
             .btnEdit {
-                background-color: #FFBB00;
+                background-color: #ffbb00;
                 color: #000;
-                border: solid 2px #FFBB00;
-                transition: .5s;
+                border: solid 2px #ffbb00;
+                transition: 0.5s;
 
                 &:hover {
-                    transition: .5s;
+                    transition: 0.5s;
                     background-color: #252525;
-                    color: #FFBB00;
+                    color: #ffbb00;
                 }
             }
         }
@@ -197,8 +203,9 @@ details[open] {
 }
 
 @media screen and (max-width: 600px) {
+    button.btnAddWebsite,
     details {
-        width: 95%;
+        width: 95% !important;
     }
 }
 

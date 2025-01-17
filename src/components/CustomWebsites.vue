@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Globe from "../assets/globe.svg";
 import Ghost from "../assets/ghost.svg";
+
 import { getCustomWebsitesBlocked } from "../helpers/getSyncStorageDatas";
 import { onMounted, ref } from "vue";
 import { IRestrictedCustom } from "../interfaces/restricted";
@@ -22,9 +23,38 @@ const props = defineProps({
         type: Function,
         required: true,
     },
+    handleChangeEditOrCreateCustomWebsite: {
+        type: Function,
+        required: true,
+    },
+    handleRenderHandleCustomBlocker: {
+        type: Function,
+        required: true,
+    },
 });
 
 const websites = ref<Array<IRestrictedCustom>>([]);
+
+const handleClickEditCustomWebsite = (
+    siteName: string,
+    siteIndex: number,
+    siteURL: string
+) => {
+    props.handleChangeSelectedCustomWebsiteName(siteName);
+    props.handleChangeSelectedCustomWebsiteIndex(siteIndex);
+    props.handleChangeSelectedCustomWebsiteURL(siteURL);
+    props.handleChangeEditOrCreateCustomWebsite("edit");
+    props.handleRenderHandleCustomBlocker();
+};
+
+const handleChangeRestriction = async (index: number) => {
+    const helper = [...websites.value];
+
+    helper[index].restricted = !helper[index].restricted;
+
+    // eslint-disable-next-line no-undef
+    await chrome.storage.sync.set({ customWebsites: [...helper] });
+};
 
 onMounted(async () => {
     const arrayOfWebsite = await getCustomWebsitesBlocked();
@@ -62,9 +92,32 @@ onMounted(async () => {
                     >
                         Delete
                     </button>
-                    <button class="btnEdit" type="button">Edit</button>
-                    <label class="switch selected">
-                        <input class="btnSwitch" type="checkbox" />
+                    <button
+                        class="btnEdit"
+                        type="button"
+                        @click="
+                            handleClickEditCustomWebsite(
+                                website.siteName,
+                                index,
+                                website.siteURL
+                            )
+                        "
+                    >
+                        Edit
+                    </button>
+                    <label v-if="website.restricted" class="switch selected">
+                        <input
+                            class="btnSwitch"
+                            type="checkbox"
+                            @click="handleChangeRestriction(index)"
+                        />
+                    </label>
+                    <label v-else class="switch">
+                        <input
+                            class="btnSwitch"
+                            type="checkbox"
+                            @click="handleChangeRestriction(index)"
+                        />
                     </label>
                 </span>
             </div>

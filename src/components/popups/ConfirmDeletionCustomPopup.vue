@@ -40,14 +40,14 @@ const handleDeleteWebsite = async () => {
 
         await handleChangeWebsiteCustom(websites);
         props.handleChangePopupStatus("success");
-        props.handleChangePopupMessage("Blocker created with success");
+        props.handleChangePopupMessage("Blocker deleted with success");
         props.handleChangeShouldRenderPopupStatus();
         props.handleRemountCustomWebsites();
         props.handleRenderConfirmDeletionCustomPopup();
     } catch (error) {
         console.error(error);
         props.handleChangePopupStatus("error");
-        props.handleChangePopupMessage("Error to create a blocker");
+        props.handleChangePopupMessage("Error to delete a blocker");
         props.handleChangeShouldRenderPopupStatus();
     }
 };

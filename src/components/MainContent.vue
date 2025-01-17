@@ -19,6 +19,7 @@ const siteName = ref("");
 const isRenderHandleCustomBlockerPopup = ref(false);
 const isRenderHandleConfirmDeletionCustomPopup = ref(false);
 const remountCustomWebsites = ref(false);
+const editOrCreateCustomWebsite = ref<"create" | "edit">("create");
 const popupStatus = ref<"success" | "error">("success");
 const popupMessage = ref("");
 const shouldRenderPopupStatus = ref(0);
@@ -107,8 +108,18 @@ const handleRemountCustomWebsites = (): void => {
     });
 };
 
+const handleChangeEditOrCreateCustomWebsite = (
+    parameter: "edit" | "create"
+): void => {
+    editOrCreateCustomWebsite.value = parameter;
+};
+
 const checkIfShouldRenderPopupStatus = (): boolean =>
     shouldRenderPopupStatus.value <= 0 ? true : false;
+
+const returnValueFromEditOrCreateCustomWebsite = (): "create" | "edit" => {
+    return editOrCreateCustomWebsite.value;
+};
 
 setInterval(() => {
     if (shouldRenderPopupStatus.value > 0) {
@@ -154,7 +165,7 @@ onMounted(async () => {
         "
         :handleRenderHandleCustomBlocker="handleRenderHandleCustomBlocker"
         :handleRemountCustomWebsites="handleRemountCustomWebsites"
-        isEditOrCreation="create"
+        :isEditOrCreation="returnValueFromEditOrCreateCustomWebsite()"
         :websiteIndex="selectedCustomWebsiteIndex"
         :choosedWebsiteName="selectedCustomWebsiteName"
         :choosedWebsiteURL="selectedCustomWebsiteURL"
@@ -201,6 +212,10 @@ onMounted(async () => {
             :handleChangeSelectedCustomWebsiteURL="
                 handleChangeSelectedCustomWebsiteURL
             "
+            :handleChangeEditOrCreateCustomWebsite="
+                handleChangeEditOrCreateCustomWebsite
+            "
+            :handleRenderHandleCustomBlocker="handleRenderHandleCustomBlocker"
         />
     </main>
     <FooterContent />
