@@ -6,10 +6,22 @@ import { onMounted, ref } from "vue";
 import { IRestrictedCustom } from "../interfaces/restricted";
 
 const props = defineProps({
-    handleRenderConfirmDeleteCustomPopup: {
+    handleRenderConfirmDeletionCustomPopup: {
         type: Function,
-        required: true
-    }
+        required: true,
+    },
+    handleChangeSelectedCustomWebsiteName: {
+        type: Function,
+        required: true,
+    },
+    handleChangeSelectedCustomWebsiteIndex: {
+        type: Function,
+        required: true,
+    },
+    handleChangeSelectedCustomWebsiteURL: {
+        type: Function,
+        required: true,
+    },
 });
 
 const websites = ref<Array<IRestrictedCustom>>([]);
@@ -26,7 +38,11 @@ onMounted(async () => {
         <summary aria-controls="socialmedia-content">Customs</summary>
 
         <section v-if="websites.length > 0">
-            <div v-for="(website, index) in websites" :key="index" class="customWebsiteContainer">
+            <div
+                v-for="(website, index) in websites"
+                :key="index"
+                class="customWebsiteContainer"
+            >
                 <figure>
                     <img :src="Globe" alt="website custom logo" />
 
@@ -34,7 +50,18 @@ onMounted(async () => {
                 </figure>
 
                 <span class="controlButtonContainer">
-                    <button class="btnDelete" type="button" @click="props.handleRenderConfirmDeleteCustomPopup()">Delete</button>
+                    <button
+                        class="btnDelete"
+                        type="button"
+                        @click="
+                            props.handleRenderConfirmDeletionCustomPopup(
+                                website.siteName,
+                                index
+                            )
+                        "
+                    >
+                        Delete
+                    </button>
                     <button class="btnEdit" type="button">Edit</button>
                     <label class="switch selected">
                         <input class="btnSwitch" type="checkbox" />

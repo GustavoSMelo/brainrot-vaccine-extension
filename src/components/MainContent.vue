@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import AdultContent from "./AdultContent.vue";
 import BettingHouse from "./BettingHouse.vue";
 import ExtensionIntroduction from "./ExtensionIntroduction.vue";
@@ -12,12 +12,13 @@ import { startSyncData } from "../helpers/websites";
 import { IRestricted } from "../interfaces/restricted";
 import { getCustomWebsitesBlocked } from "../helpers/getSyncStorageDatas";
 import CustomWebsites from "./CustomWebsites.vue";
-import ConfirmDeleteCustomPopup from "./popups/ConfirmDeleteCustomPopup.vue";
+import ConfirmDeletionCustomPopup from "./popups/ConfirmDeletionCustomPopup.vue";
 
 const siteSessionName = ref("");
 const siteName = ref("");
 const isRenderHandleCustomBlockerPopup = ref(false);
-const isRenderHandleConfirmDeleteCustomPopup = ref(true);
+const isRenderHandleConfirmDeletionCustomPopup = ref(false);
+const remountCustomWebsites = ref(false);
 const popupStatus = ref<"success" | "error">("success");
 const popupMessage = ref("");
 const shouldRenderPopupStatus = ref(0);
@@ -31,8 +32,8 @@ const handleRenderHandleCustomBlocker = (): void => {
         !isRenderHandleCustomBlockerPopup.value;
 };
 
-const shouldRenderConfirmDeleteCustomPopup = (): boolean => {
-    if (!isRenderHandleConfirmDeleteCustomPopup.value) return false;
+const shouldRenderConfirmDeletionCustomPopup = (): boolean => {
+    if (!isRenderHandleConfirmDeletionCustomPopup.value) return false;
 
     return true;
 };
@@ -45,6 +46,12 @@ const shouldRenderDisableBlockerPopup = (): boolean => {
     if (!siteSessionName.value || !siteName.value) return false;
     return true;
 };
+
+const shouldRemountCustomWebsites = (): boolean => {
+    if (!remountCustomWebsites.value) return true;
+    return false;
+};
+
 const handleChangeSessionInformations = (
     selectedSession: "socialMedias" | "adultContent" | "bettingHouse",
     selectedSiteName: string
@@ -61,17 +68,43 @@ const handleChangeShouldRenderPopupStatus = (): void => {
     shouldRenderPopupStatus.value = 5;
 };
 
-const handleChangePopupMessage = (message: string) => {
+const handleChangePopupMessage = (message: string): void => {
     popupMessage.value = message;
 };
 
-const handleChangePopupStatus = (status: "success" | "error") => {
+const handleChangePopupStatus = (status: "success" | "error"): void => {
     popupStatus.value = status;
 };
 
-const handleRenderConfirmDeleteCustomPopup = () => {
-    isRenderHandleConfirmDeleteCustomPopup.value =
-        !isRenderHandleConfirmDeleteCustomPopup.value;
+const handleRenderConfirmDeletionCustomPopup = (
+    websiteName: string,
+    websiteIndex: number
+): void => {
+    selectedCustomWebsiteName.value = websiteName;
+    selectedCustomWebsiteIndex.value = websiteIndex;
+
+    isRenderHandleConfirmDeletionCustomPopup.value =
+        !isRenderHandleConfirmDeletionCustomPopup.value;
+};
+
+const handleChangeSelectedCustomWebsiteName = (websiteName: string): void => {
+    selectedCustomWebsiteName.value = websiteName;
+};
+
+const handleChangeSelectedCustomWebsiteIndex = (websiteIndex: number): void => {
+    selectedCustomWebsiteIndex.value = websiteIndex;
+};
+
+const handleChangeSelectedCustomWebsiteURL = (websiteURL: string): void => {
+    selectedCustomWebsiteURL.value = websiteURL;
+};
+
+const handleRemountCustomWebsites = (): void => {
+    remountCustomWebsites.value = true;
+
+    nextTick(() => {
+        remountCustomWebsites.value = false;
+    });
 };
 
 const checkIfShouldRenderPopupStatus = (): boolean =>
@@ -98,10 +131,10 @@ onMounted(async () => {
         :handleClearSiteSelected="handleClearSiteSelected"
     />
 
-    <ConfirmDeleteCustomPopup
-        v-if="shouldRenderConfirmDeleteCustomPopup()"
-        :handleRenderConfirmDeleteCustomPopup="
-            handleRenderConfirmDeleteCustomPopup
+    <ConfirmDeletionCustomPopup
+        v-if="shouldRenderConfirmDeletionCustomPopup()"
+        :handleRenderConfirmDeletionCustomPopup="
+            handleRenderConfirmDeletionCustomPopup
         "
         :handleChangePopupMessage="handleChangePopupMessage"
         :handleChangePopupStatus="handleChangePopupStatus"
@@ -110,6 +143,7 @@ onMounted(async () => {
         "
         :siteName="selectedCustomWebsiteName"
         :siteIndex="selectedCustomWebsiteIndex"
+        :handleRemountCustomWebsites="handleRemountCustomWebsites"
     />
 
     <HandleCustomBlocker
@@ -119,6 +153,7 @@ onMounted(async () => {
             handleChangeShouldRenderPopupStatus
         "
         :handleRenderHandleCustomBlocker="handleRenderHandleCustomBlocker"
+        :handleRemountCustomWebsites="handleRemountCustomWebsites"
         isEditOrCreation="create"
         :websiteIndex="selectedCustomWebsiteIndex"
         :choosedWebsiteName="selectedCustomWebsiteName"
@@ -153,8 +188,18 @@ onMounted(async () => {
             :handleChangeSessionInformations="handleChangeSessionInformations"
         />
         <CustomWebsites
-            :handleRenderConfirmDeleteCustomPopup="
-                handleRenderConfirmDeleteCustomPopup
+            v-if="shouldRemountCustomWebsites()"
+            :handleRenderConfirmDeletionCustomPopup="
+                handleRenderConfirmDeletionCustomPopup
+            "
+            :handleChangeSelectedCustomWebsiteName="
+                handleChangeSelectedCustomWebsiteName
+            "
+            :handleChangeSelectedCustomWebsiteIndex="
+                handleChangeSelectedCustomWebsiteIndex
+            "
+            :handleChangeSelectedCustomWebsiteURL="
+                handleChangeSelectedCustomWebsiteURL
             "
         />
     </main>

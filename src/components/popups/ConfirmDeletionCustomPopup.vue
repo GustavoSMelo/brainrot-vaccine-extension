@@ -3,7 +3,7 @@ import { getCustomWebsitesBlocked } from "../../helpers/getSyncStorageDatas";
 import { handleChangeWebsiteCustom } from "../../helpers/websites";
 
 const props = defineProps({
-    handleRenderConfirmDeleteCustomPopup: {
+    handleRenderConfirmDeletionCustomPopup: {
         type: Function,
         required: true,
     },
@@ -16,6 +16,10 @@ const props = defineProps({
         required: true,
     },
     handleChangePopupStatus: {
+        type: Function,
+        required: true,
+    },
+    handleRemountCustomWebsites: {
         type: Function,
         required: true,
     },
@@ -38,6 +42,8 @@ const handleDeleteWebsite = async () => {
         props.handleChangePopupStatus("success");
         props.handleChangePopupMessage("Blocker created with success");
         props.handleChangeShouldRenderPopupStatus();
+        props.handleRemountCustomWebsites();
+        props.handleRenderConfirmDeletionCustomPopup();
     } catch (error) {
         console.error(error);
         props.handleChangePopupStatus("error");
@@ -48,7 +54,7 @@ const handleDeleteWebsite = async () => {
 </script>
 
 <template>
-    <div class="popupContainer" @click="props.handleRenderConfirmDeleteCustomPopup()">
+    <div class="popupContainer" @click="props.handleRenderConfirmDeletionCustomPopup()">
         <section class="popup" @click.stop>
             <h1>Would you like to remove {{ props.siteName }} ?</h1>
 
@@ -59,7 +65,7 @@ const handleDeleteWebsite = async () => {
                 <button
                     class="btnCancel"
                     type="button"
-                    @click="props.handleRenderConfirmDeleteCustomPopup()"
+                    @click="props.handleRenderConfirmDeletionCustomPopup()"
                 >
                     Cancel
                 </button>

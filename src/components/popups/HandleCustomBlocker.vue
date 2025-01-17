@@ -20,8 +20,12 @@ const props = defineProps({
         type: Function,
         required: true,
     },
+    handleRemountCustomWebsites: {
+        type: Function,
+        required: true,
+    },
     isEditOrCreation: {
-        type: String, //edit | create
+        type: String, // edit | create
         required: true,
     },
     websiteIndex: {
@@ -42,7 +46,7 @@ const websiteName = ref(props.choosedWebsiteName ?? '');
 const websiteURL = ref(props.choosedWebsiteURL ?? '');
 
 const handleChangeWebsiteName = (siteName: string): void => {
-    websiteName.value = siteName.trim();
+    websiteName.value = siteName;
 };
 
 const handleChangeWebsiteURL = (siteURL: string): void => {
@@ -67,6 +71,8 @@ const handleClickButton = async () => {
             props.handleChangePopupStatus("success");
             props.handleChangePopupMessage("Blocker created with success");
             props.handleChangeShouldRenderPopupStatus();
+            props.handleRemountCustomWebsites();
+            props.handleRenderHandleCustomBlocker();
         } catch (error) {
             console.error(error);
             props.handleChangePopupStatus("error");
