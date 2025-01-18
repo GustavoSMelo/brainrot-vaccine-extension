@@ -48,7 +48,7 @@ export default {
                     if (!adultContentRestrictionStates.value[index].restricted) {
                         props.handleChangeSessionInformations('adultContent', ac.siteName);
                     } else {
-                        handleChangeRestrictionAdultContent(ac.siteName);
+                        handleChangeRestrictionAdultContent(ac.siteName, true);
                     }
                 }
             });

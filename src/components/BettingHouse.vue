@@ -44,7 +44,7 @@ export default {
                     if (!bettingHouseRestrictionStates.value[index].restricted) {
                         props.handleChangeSessionInformations('bettingHouse', bet.siteName);
                     } else {
-                        handleChangeRestrictionBets(bet.siteName);
+                        handleChangeRestrictionBets(bet.siteName, true);
                     }
                 }
             });

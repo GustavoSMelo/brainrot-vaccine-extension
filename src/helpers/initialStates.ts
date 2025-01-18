@@ -1,4 +1,4 @@
-import { IRestricted } from "../interfaces/restricted";
+import { IRestricted, IRestrictedCustom } from "../interfaces/restricted";
 
 const betsInitialState = [
     { siteName: "Bet365", restricted: true },
@@ -29,7 +29,14 @@ const socialMediasInitialState = [
     { siteName: "Youtube (Shorts)", restricted: true },
     { siteName: "Youtube", restricted: false },
     { siteName: "Twitch", restricted: false },
-    { siteName: "Reddit", restricted: false }
+    { siteName: "Reddit", restricted: false },
 ] as Array<IRestricted>;
 
-export { betsInitialState, adultContentInitialState, socialMediasInitialState };
+const customWebsitesInitialState = [] as Array<IRestrictedCustom>;
+
+export {
+    betsInitialState,
+    adultContentInitialState,
+    socialMediasInitialState,
+    customWebsitesInitialState,
+};

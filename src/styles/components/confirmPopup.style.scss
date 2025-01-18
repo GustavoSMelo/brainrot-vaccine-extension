@@ -28,6 +28,45 @@
         padding: 10px;
         position: relative;
         z-index: 30;
+        text-align: center;
+
+        span.btnContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+
+            button {
+                padding: 10px 20px;
+                font-weight: bold;
+                margin: 0 5px;
+                cursor: pointer;
+                border: none;
+                border-radius: 3px;
+            }
+
+            button.btnCancel {
+                background-color: #909090;
+                transition: .5s;
+
+                &:hover {
+                    transition: .5s;
+                    background-color: #fff;
+                    color: #909090;
+                }
+            }
+
+            button.btnDelete {
+                background-color: #EB1A45;
+                color: #fff;
+                transition: .5s;
+
+                &:hover {
+                    transition: .5s;
+                    background-color: #BF1537;
+                }
+            }
+        }
 
         button.enabled {
             margin-top: 10px;

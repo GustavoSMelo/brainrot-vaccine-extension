@@ -1,0 +1,30 @@
+@charset "utf-8";
+
+.popupSuccess, .popupError {
+    max-width: 200px;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    position: fixed;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 50;
+    font-weight: bold;
+    box-shadow: 1px 1px 4px #101010;
+    border: solid 2px #101010;
+}
+
+.popupSuccess {
+    background-color: #73dc8c;
+    color: #000;
+}
+
+.popupError {
+    background-color: #EB1A45;
+    color: #000;
+}

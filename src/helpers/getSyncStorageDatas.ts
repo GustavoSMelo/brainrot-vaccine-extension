@@ -1,6 +1,6 @@
 "use strict";
 
-import { IRestricted } from "../interfaces/restricted";
+import { IRestricted, IRestrictedCustom } from "../interfaces/restricted";
 
 const getSocialMediasBlocked = async (): Promise<Array<IRestricted>> => {
     const helper = await chrome.storage.sync.get("socialMediasBlocked");
@@ -20,4 +20,15 @@ const getBetsBlocked = async (): Promise<Array<IRestricted>> => {
     return helper.betsBlocked as Array<IRestricted>;
 };
 
-export { getSocialMediasBlocked, getAdultContentBlocked, getBetsBlocked };
+const getCustomWebsitesBlocked = async (): Promise<Array<IRestrictedCustom>> => {
+    const helper = await chrome.storage.sync.get("customWebsites");
+
+    return helper.customWebsites as Array<IRestrictedCustom>;
+};
+
+export {
+    getSocialMediasBlocked,
+    getAdultContentBlocked,
+    getBetsBlocked,
+    getCustomWebsitesBlocked,
+};

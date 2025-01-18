@@ -4,6 +4,33 @@ main {
     display: flex;
     align-items: center;
     flex-direction: column;
+
+    button.btnAddWebsite {
+        background-color: #73dc8c;
+        border: none;
+        width: 60%;
+        margin: 15px 0;
+        cursor: pointer;
+        color: #000;
+        font-weight: bold;
+        border-radius: 5px;
+        padding: 20px 0;
+        font-size: 17pt;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.5s;
+
+        & img {
+            width: 25px;
+            margin-right: 10px;
+        }
+
+        &:hover {
+            transition: 0.5s;
+            background-color: #5bb06f;
+        }
+    }
 }
 
 details {
@@ -95,6 +122,77 @@ details {
                 justify-content: end;
             }
         }
+
+        span.controlButtonContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            button {
+                padding: 5px 10px;
+                margin-right: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                border-radius: 5px;
+                font-weight: bold;
+                cursor: pointer;
+
+                img {
+                    width: 20px;
+                    margin-right: 5px;
+                }
+            }
+
+            .btnDelete {
+                background-color: #fe2e2e;
+                color: #000;
+                border: solid 2px #fe2e2e;
+                transition: 0.5s;
+
+                &:hover {
+                    transition: 0.5s;
+                    background-color: #252525;
+                    color: #fe2e2e;
+                    fill: #fe2e2e;
+
+                    img {
+                        fill: #fe2e2e;
+                    }
+                }
+            }
+
+            .btnEdit {
+                background-color: #ffbb00;
+                color: #000;
+                border: solid 2px #ffbb00;
+                transition: 0.5s;
+
+                &:hover {
+                    transition: 0.5s;
+                    background-color: #252525;
+                    color: #ffbb00;
+                }
+            }
+        }
+
+        span.emptyCustomWebsiteContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+
+            figure {
+                img {
+                    width: 5rem;
+                }
+
+                figcaption {
+                    font-weight: bold;
+                }
+            }
+        }
     }
 }
 
@@ -105,8 +203,9 @@ details[open] {
 }
 
 @media screen and (max-width: 600px) {
+    button.btnAddWebsite,
     details {
-        width: 95%;
+        width: 95% !important;
     }
 }
 
@@ -122,6 +221,16 @@ details[open] {
                     figcaption {
                         font-size: 14pt;
                     }
+                }
+            }
+
+            div.customWebsiteContainer {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                figure {
+                    margin-bottom: 30px;
                 }
             }
         }

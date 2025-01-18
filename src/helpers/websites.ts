@@ -3,8 +3,8 @@ import InstagramLogo from "../assets/instagram.svg";
 import YoutubeLogo from "../assets/youtube.svg";
 import TwitterLogo from "../assets/twitter.svg";
 import TelegramLogo from "../assets/telegram.svg";
-import TwitchLogo from '../assets/twitch.svg';
-import RedditLogo from '../assets/reddit.svg';
+import TwitchLogo from "../assets/twitch.svg";
+import RedditLogo from "../assets/reddit.svg";
 
 import XvideosLogo from "../assets/xvd.svg";
 import PornhubLogo from "../assets/prnhb.svg";
@@ -22,6 +22,7 @@ import BlazeLogo from "../assets/blaze.webp";
 import {
     getAdultContentBlocked,
     getBetsBlocked,
+    getCustomWebsitesBlocked,
     getSocialMediasBlocked,
 } from "../helpers/getSyncStorageDatas";
 
@@ -31,6 +32,7 @@ import {
     betsInitialState,
     socialMediasInitialState,
 } from "./initialStates";
+import { IRestrictedCustom } from "../interfaces/restricted";
 
 const socialMediasBlockeds = ref([...socialMediasInitialState]);
 const adultContentBlocked = ref([...adultContentInitialState]);
@@ -75,7 +77,9 @@ const isRestrictedBets = async (siteName: string) => {
 const isRestrictedAdultContent = async (siteName: string) => {
     await startSyncData();
     const site = adultContentBlocked.value.find(
-        (site) => site.siteName.toLowerCase() === siteName.toLowerCase() && site.restricted
+        (site) =>
+            site.siteName.toLowerCase() === siteName.toLowerCase() &&
+            site.restricted
     );
 
     if (!site || site === null || site === undefined) {
@@ -85,7 +89,23 @@ const isRestrictedAdultContent = async (siteName: string) => {
     return site.restricted;
 };
 
-const handleChangeRestrictionSocialMedia = async (siteName: string) => {
+const isRestrictedWebsiteCustom = async (siteName: string) => {
+    const restrictedCustoms = await getCustomWebsitesBlocked();
+
+    const site = restrictedCustoms.find(
+        (site) =>
+            site.siteName.toLowerCase() === siteName.toLowerCase() &&
+            site.restricted
+    );
+
+    if (!site || site === null || site === undefined) {
+        return false;
+    }
+
+    return site.restricted;
+};
+
+const handleChangeRestrictionSocialMedia = async (siteName: string, restriction: boolean) => {
     const site = socialMediasBlockeds.value.find(
         (site) => site.siteName === siteName
     );
@@ -95,7 +115,7 @@ const handleChangeRestrictionSocialMedia = async (siteName: string) => {
         return;
     }
 
-    site.restricted = !site.restricted;
+    site.restricted = restriction;
 
     socialMediasBlockeds.value.find(
         (site) => site.siteName === siteName
@@ -106,7 +126,7 @@ const handleChangeRestrictionSocialMedia = async (siteName: string) => {
     });
 };
 
-const handleChangeRestrictionAdultContent = async (siteName: string) => {
+const handleChangeRestrictionAdultContent = async (siteName: string, restriction: boolean) => {
     const site = adultContentBlocked.value.find(
         (site) => site.siteName === siteName
     );
@@ -116,7 +136,7 @@ const handleChangeRestrictionAdultContent = async (siteName: string) => {
         return;
     }
 
-    site.restricted = !site.restricted;
+    site.restricted = restriction;
 
     adultContentBlocked.value.find(
         (site) => site.siteName === siteName
@@ -127,7 +147,7 @@ const handleChangeRestrictionAdultContent = async (siteName: string) => {
     });
 };
 
-const handleChangeRestrictionBets = async (siteName: string) => {
+const handleChangeRestrictionBets = async (siteName: string, restriction: boolean) => {
     const site = betsBlocked.value.find((site) => site.siteName === siteName);
 
     if (!site || site === null || site === undefined) {
@@ -135,7 +155,7 @@ const handleChangeRestrictionBets = async (siteName: string) => {
         return;
     }
 
-    site.restricted = !site.restricted;
+    site.restricted = restriction;
 
     betsBlocked.value.find((site) => site.siteName === siteName)!.restricted =
         site.restricted;
@@ -143,11 +163,18 @@ const handleChangeRestrictionBets = async (siteName: string) => {
     await chrome.storage.sync.set({ betsBlocked: [...betsBlocked.value] });
 };
 
+const handleChangeWebsiteCustom = async (
+    websiteCustom: Array<IRestrictedCustom>
+) => {
+    await chrome.storage.sync.set({ customWebsites: [...websiteCustom] });
+};
+
 const isURLBlocked = async (websiteURL: string): Promise<boolean> => {
+    const customWebsites = await getCustomWebsitesBlocked();
     for (const ac of websites.adultContent) {
         if (
             websiteURL.toLowerCase().startsWith(ac.siteURL.toLowerCase()) &&
-            await isRestrictedAdultContent(ac.siteName)
+            (await isRestrictedAdultContent(ac.siteName))
         ) {
             return true;
         }
@@ -156,7 +183,7 @@ const isURLBlocked = async (websiteURL: string): Promise<boolean> => {
     for (const bet of websites.bets) {
         if (
             websiteURL.toLowerCase().startsWith(bet.siteURL.toLowerCase()) &&
-            await isRestrictedBets(bet.siteName)
+            (await isRestrictedBets(bet.siteName))
         ) {
             return true;
         }
@@ -165,7 +192,16 @@ const isURLBlocked = async (websiteURL: string): Promise<boolean> => {
     for (const sm of websites.socialMedias) {
         if (
             websiteURL.toLowerCase().startsWith(sm.siteURL.toLowerCase()) &&
-            await isRestrictedSocialMedia(sm.siteName)
+            (await isRestrictedSocialMedia(sm.siteName))
+        ) {
+            return true;
+        }
+    }
+
+    for (const cw of customWebsites) {
+        if (
+            websiteURL.toLowerCase().startsWith(cw.siteURL.toLowerCase()) &&
+            (await isRestrictedWebsiteCustom(cw.siteName))
         ) {
             return true;
         }
@@ -209,7 +245,7 @@ const websites = {
         {
             siteName: "Youtube",
             siteURL: "https://www.youtube.com/",
-            logo: YoutubeLogo
+            logo: YoutubeLogo,
         },
         {
             siteName: "Twitch",
@@ -219,8 +255,8 @@ const websites = {
         {
             siteName: "Reddit",
             siteURL: "https://www.reddit.com",
-            logo: RedditLogo
-        }
+            logo: RedditLogo,
+        },
     ],
     adultContent: [
         {
@@ -303,9 +339,11 @@ export {
     isRestrictedSocialMedia,
     isRestrictedAdultContent,
     isRestrictedBets,
+    isRestrictedWebsiteCustom,
     handleChangeRestrictionAdultContent,
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
+    handleChangeWebsiteCustom,
     isURLBlocked,
     startSyncData,
 };
