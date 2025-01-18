@@ -105,7 +105,7 @@ const isRestrictedWebsiteCustom = async (siteName: string) => {
     return site.restricted;
 };
 
-const handleChangeRestrictionSocialMedia = async (siteName: string) => {
+const handleChangeRestrictionSocialMedia = async (siteName: string, restriction: boolean) => {
     const site = socialMediasBlockeds.value.find(
         (site) => site.siteName === siteName
     );
@@ -115,7 +115,7 @@ const handleChangeRestrictionSocialMedia = async (siteName: string) => {
         return;
     }
 
-    site.restricted = !site.restricted;
+    site.restricted = restriction;
 
     socialMediasBlockeds.value.find(
         (site) => site.siteName === siteName
@@ -126,7 +126,7 @@ const handleChangeRestrictionSocialMedia = async (siteName: string) => {
     });
 };
 
-const handleChangeRestrictionAdultContent = async (siteName: string) => {
+const handleChangeRestrictionAdultContent = async (siteName: string, restriction: boolean) => {
     const site = adultContentBlocked.value.find(
         (site) => site.siteName === siteName
     );
@@ -136,7 +136,7 @@ const handleChangeRestrictionAdultContent = async (siteName: string) => {
         return;
     }
 
-    site.restricted = !site.restricted;
+    site.restricted = restriction;
 
     adultContentBlocked.value.find(
         (site) => site.siteName === siteName
@@ -147,7 +147,7 @@ const handleChangeRestrictionAdultContent = async (siteName: string) => {
     });
 };
 
-const handleChangeRestrictionBets = async (siteName: string) => {
+const handleChangeRestrictionBets = async (siteName: string, restriction: boolean) => {
     const site = betsBlocked.value.find((site) => site.siteName === siteName);
 
     if (!site || site === null || site === undefined) {
@@ -155,7 +155,7 @@ const handleChangeRestrictionBets = async (siteName: string) => {
         return;
     }
 
-    site.restricted = !site.restricted;
+    site.restricted = restriction;
 
     betsBlocked.value.find((site) => site.siteName === siteName)!.restricted =
         site.restricted;

@@ -48,7 +48,7 @@ export default {
                     if (!socialMediaRestrictionStates.value[index].restricted) {
                         props.handleChangeSessionInformations('socialMedias', sm.siteName);
                     } else {
-                        handleChangeRestrictionSocialMedia(sm.siteName);
+                        handleChangeRestrictionSocialMedia(sm.siteName, true);
                     }
                 }
             });

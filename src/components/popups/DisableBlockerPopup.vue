@@ -23,13 +23,13 @@ const isTimerEnded = (): boolean => (timer.value <= 0 ? true : false);
 const handleDisableWebsiteRestriction = (): void => {
     switch (props.siteSessionName) {
         case "socialMedias":
-            handleChangeRestrictionSocialMedia(props.siteName);
+            handleChangeRestrictionSocialMedia(props.siteName, false);
             break;
         case "adultContent":
-            handleChangeRestrictionAdultContent(props.siteName);
+            handleChangeRestrictionAdultContent(props.siteName, false);
             break;
         case "bettingHouse":
-            handleChangeRestrictionBets(props.siteName);
+            handleChangeRestrictionBets(props.siteName, false);
             break;
         default:
             console.error("Error to set sessionName");
