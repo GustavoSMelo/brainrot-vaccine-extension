@@ -1,7 +1,9 @@
 'use strict';
 
 const blockerWebsite = (tabId: number) => {
-    chrome.tabs.remove(tabId);
+    setTimeout(() => {
+        chrome.tabs.remove(tabId);
+    }, 1000);
 };
 
 export default blockerWebsite;
