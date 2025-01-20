@@ -5,7 +5,7 @@
 
 Extension created to prevent yourself to access vicious websites that is injuring our attention and our brain.
 
-<h2>Browsers Compatibility</h2>
+<h2>Browsers compatibility list: </h2>
 
 <table>
     <tr>
@@ -65,6 +65,17 @@ Extension created to prevent yourself to access vicious websites that is injurin
 <h2>Extension working: </h2>
 
 <img src="./.github/assets/brv.gif" alt="Gif that shows how extension works"/>
+
+<h2>Download link: </h2>
+
+<ul>
+    <li>
+        [Chrome based](https://chromewebstore.google.com/detail/brainrot-vaccine/kgacpgljpahannknnbmbogahojphglle?authuser=0&hl=pt-BR)
+    </li>
+    <li>
+        [Firefox based](https://addons.mozilla.org/pt-BR/firefox/addon/brainrot-vaccine/)
+    </li>
+</ul>
 
 <h2>Section for developers: </h2>
 
