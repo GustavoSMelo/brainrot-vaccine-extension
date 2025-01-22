@@ -8,7 +8,7 @@ import {
 } from "../helpers/initialStates";
 import { isURLBlocked } from "../helpers/websites";
 
-chrome.webNavigation.onCompleted.addListener((details) => {
+chrome.webNavigation.onDOMContentLoaded.addListener((details) => {
     chrome.tabs.get(details.tabId, async (/* tab */) => {
         const { tabURL, tabId }: { tabURL: string; tabId: number } =
             await getCurrentTabURL();

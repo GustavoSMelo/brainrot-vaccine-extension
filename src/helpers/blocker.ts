@@ -3,7 +3,7 @@
 const blockerWebsite = (tabId: number) => {
     setTimeout(() => {
         chrome.tabs.remove(tabId);
-    }, 1000);
+    }, 500);
 };
 
 export default blockerWebsite;
