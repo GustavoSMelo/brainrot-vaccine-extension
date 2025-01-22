@@ -1,5 +1,4 @@
 import blockerWebsite from "../helpers/blocker";
-import getCurrentTabURL from "../helpers/getCurrentTab";
 import {
     adultContentInitialState,
     betsInitialState,
@@ -8,16 +7,24 @@ import {
 } from "../helpers/initialStates";
 import { isURLBlocked } from "../helpers/websites";
 
-chrome.webNavigation.onDOMContentLoaded.addListener((details) => {
-    chrome.tabs.get(details.tabId, async (/* tab */) => {
-        const { tabURL, tabId }: { tabURL: string; tabId: number } =
-            await getCurrentTabURL();
-        const isUrlBlocked = await isURLBlocked(tabURL);
+async function checkAndBlockWebsite(tabId: number, url: string) {
+    const isUrlBlocked = await isURLBlocked(url);
+    if (isUrlBlocked) {
+        blockerWebsite(tabId);
+    }
+}
 
-        if (isUrlBlocked) {
-            blockerWebsite(tabId);
-        }
-    });
+// Listen for committed navigation (full page reload or navigation)
+chrome.webNavigation.onCommitted.addListener((details) => {
+    if (details.frameId === 0) {
+        checkAndBlockWebsite(details.tabId, details.url);
+    }
+});
+
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+    if (details.frameId === 0) {
+        checkAndBlockWebsite(details.tabId, details.url);
+    }
 });
 
 chrome.runtime.onInstalled.addListener(async () => {
@@ -31,6 +38,6 @@ chrome.runtime.onInstalled.addListener(async () => {
         betsBlocked: [...betsInitialState],
     });
     await chrome.storage.sync.set({
-        customWebsites: [...customWebsitesInitialState]
+        customWebsites: [...customWebsitesInitialState],
     });
 });
