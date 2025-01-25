@@ -55,10 +55,10 @@ const handleChangeWebsiteURL = (siteURL: string): void => {
 
 const handleClickButton = async () => {
     if (
-        !websiteURL.value.includes(".com") ||
-        !websiteURL.value.includes(".org") ||
-        !websiteURL.value.includes(".net") ||
-        !websiteURL.value.includes("https") ||
+        !websiteURL.value.includes(".com") &&
+        !websiteURL.value.includes(".org") &&
+        !websiteURL.value.includes(".net") &&
+        !websiteURL.value.includes("https") &&
         !websiteURL.value.includes("http")
     ) {
         props.handleChangePopupStatus("error");
@@ -80,6 +80,14 @@ const handleClickButton = async () => {
 
     if (props.isEditOrCreation === "create") {
         try {
+            if (helper.length >= 20) {
+                props.handleChangePopupStatus("error");
+                props.handleChangePopupMessage("Limit of 20 website reached");
+                props.handleChangeShouldRenderPopupStatus();
+
+                return;
+            }
+
             const newWebsite: IRestrictedCustom = {
                 siteName: websiteName.value,
                 siteURL: websiteURL.value,
