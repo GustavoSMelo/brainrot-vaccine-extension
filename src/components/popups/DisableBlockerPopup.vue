@@ -41,6 +41,8 @@ const handleDisableAll = async () => {
         adultContentBlocked: [...adultContent],
         betsBlocked: [...bets],
     });
+
+    props.handleRemountMainContent();
 };
 
 const handleDisableWebsiteRestriction = (): void => {
@@ -62,7 +64,6 @@ const handleDisableWebsiteRestriction = (): void => {
             break;
     }
 
-    props.handleRemountMainContent();
     props.handleClearSiteSelected();
 };
 

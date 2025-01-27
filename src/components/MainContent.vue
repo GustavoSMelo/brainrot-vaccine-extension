@@ -154,10 +154,10 @@ onMounted(async () => {
 <template>
     <DisableBlockerPopup
         v-if="shouldRenderDisableBlockerPopup()"
+        :handleRemountMainContent="handleRemountMainContent"
+        :handleClearSiteSelected="handleClearSiteSelected"
         :siteName="siteName"
         :siteSessionName="siteSessionName"
-        :handleClearSiteSelected="handleClearSiteSelected"
-        :handleRemountMainContent="handleRemountMainContent"
     />
 
     <ConfirmDeletionCustomPopup
