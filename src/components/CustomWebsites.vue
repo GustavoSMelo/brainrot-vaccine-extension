@@ -34,6 +34,7 @@ const props = defineProps({
 });
 
 const websites = ref<Array<IRestrictedCustom>>([]);
+const websitesLimitLength = ref(0);
 
 const handleClickEditCustomWebsite = (
     siteName: string,
@@ -59,6 +60,7 @@ const handleChangeRestriction = async (index: number) => {
 onMounted(async () => {
     const arrayOfWebsite = await getCustomWebsitesBlocked();
 
+    websitesLimitLength.value = arrayOfWebsite.length;
     websites.value = [...arrayOfWebsite];
 });
 </script>
@@ -68,6 +70,8 @@ onMounted(async () => {
         <summary aria-controls="socialmedia-content">Customs</summary>
 
         <section v-if="websites.length > 0">
+            <h2>Limit: {{ websitesLimitLength }}/20</h2>
+
             <div
                 v-for="(website, index) in websites"
                 :key="index"
