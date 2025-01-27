@@ -1,3 +1,4 @@
+<!-- eslint-disable no-undef -->
 <script setup lang="ts">
 import { nextTick, ref, watch } from "vue";
 import {
@@ -5,11 +6,17 @@ import {
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
 } from "../../helpers/websites";
+import {
+    getAdultContentBlocked,
+    getBetsBlocked,
+    getSocialMediasBlocked,
+} from "../../helpers/getSyncStorageDatas";
 
 const props = defineProps({
     siteName: { type: String, required: true },
     siteSessionName: { type: String, required: true },
     handleClearSiteSelected: { type: Function, required: true },
+    handleRemountMainContent: { type: Function, required: true },
 });
 
 const timer = ref(30);
@@ -19,6 +26,22 @@ const intervalId = setInterval(async () => {
 }, 1000);
 
 const isTimerEnded = (): boolean => (timer.value <= 0 ? true : false);
+
+const handleDisableAll = async () => {
+    const adultContent = await getAdultContentBlocked();
+    const socialMedias = await getSocialMediasBlocked();
+    const bets = await getBetsBlocked();
+
+    adultContent.forEach((ac) => (ac.restricted = false));
+    socialMedias.forEach((sm) => (sm.restricted = false));
+    bets.forEach((bet) => (bet.restricted = false));
+
+    await chrome.storage.sync.set({
+        socialMediasBlocked: [...socialMedias],
+        adultContentBlocked: [...adultContent],
+        betsBlocked: [...bets],
+    });
+};
 
 const handleDisableWebsiteRestriction = (): void => {
     switch (props.siteSessionName) {
@@ -31,11 +54,15 @@ const handleDisableWebsiteRestriction = (): void => {
         case "bettingHouse":
             handleChangeRestrictionBets(props.siteName, false);
             break;
+        case "allContent":
+            handleDisableAll();
+            break;
         default:
             console.error("Error to set sessionName");
             break;
     }
 
+    props.handleRemountMainContent();
     props.handleClearSiteSelected();
 };
 

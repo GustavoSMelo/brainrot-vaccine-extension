@@ -7,6 +7,7 @@ import FooterContent from "./FooterContent.vue";
 import SocialMedias from "./SocialMedias.vue";
 import DisableBlockerPopup from "./popups/DisableBlockerPopup.vue";
 import HandleCustomBlocker from "./popups/HandleCustomBlocker.vue";
+import AdvancedSession from "./AdvancedSession.vue";
 import StatusPopup from "./popups/StatusPopup.vue";
 import { startSyncData } from "../helpers/websites";
 import { IRestricted } from "../interfaces/restricted";
@@ -19,6 +20,7 @@ const siteName = ref("");
 const isRenderHandleCustomBlockerPopup = ref(false);
 const isRenderHandleConfirmDeletionCustomPopup = ref(false);
 const remountCustomWebsites = ref(false);
+const remountMainContent = ref(true);
 const editOrCreateCustomWebsite = ref<"create" | "edit">("create");
 const popupStatus = ref<"success" | "error">("success");
 const popupMessage = ref("");
@@ -54,7 +56,11 @@ const shouldRemountCustomWebsites = (): boolean => {
 };
 
 const handleChangeSessionInformations = (
-    selectedSession: "socialMedias" | "adultContent" | "bettingHouse",
+    selectedSession:
+        | "socialMedias"
+        | "adultContent"
+        | "bettingHouse"
+        | "allContent",
     selectedSiteName: string
 ): void => {
     siteName.value = selectedSiteName;
@@ -108,11 +114,22 @@ const handleRemountCustomWebsites = (): void => {
     });
 };
 
+const handleRemountMainContent = (): void => {
+    remountMainContent.value = false;
+
+    nextTick(() => {
+        remountMainContent.value = true;
+    });
+};
+
 const handleChangeEditOrCreateCustomWebsite = (
     parameter: "edit" | "create"
 ): void => {
     editOrCreateCustomWebsite.value = parameter;
 };
+
+const shouldRemountMainContent = (): boolean =>
+    remountMainContent.value ? true : false;
 
 const checkIfShouldRenderPopupStatus = (): boolean =>
     shouldRenderPopupStatus.value <= 0 ? true : false;
@@ -140,6 +157,7 @@ onMounted(async () => {
         :siteName="siteName"
         :siteSessionName="siteSessionName"
         :handleClearSiteSelected="handleClearSiteSelected"
+        :handleRemountMainContent="handleRemountMainContent"
     />
 
     <ConfirmDeletionCustomPopup
@@ -177,7 +195,7 @@ onMounted(async () => {
         :popupStatus="popupStatus"
     />
 
-    <main>
+    <main v-if="shouldRemountMainContent()">
         <ExtensionIntroduction />
 
         <button
@@ -216,6 +234,16 @@ onMounted(async () => {
                 handleChangeEditOrCreateCustomWebsite
             "
             :handleRenderHandleCustomBlocker="handleRenderHandleCustomBlocker"
+        />
+
+        <AdvancedSession
+            :handleChangeSessionInformations="handleChangeSessionInformations"
+            :handleRemountMainContent="handleRemountMainContent"
+            :handleChangePopupMessage="handleChangePopupMessage"
+            :handleChangePopupStatus="handleChangePopupStatus"
+            :handleChangeShouldRenderPopupStatus="
+                handleChangeShouldRenderPopupStatus
+            "
         />
     </main>
     <FooterContent />

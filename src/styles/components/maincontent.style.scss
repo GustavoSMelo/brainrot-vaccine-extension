@@ -194,6 +194,61 @@ details {
             }
         }
     }
+
+    article.advancedContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        section.row {
+            padding: 5px 0;
+            button {
+                width: 140px;
+                padding: 10px 0px;
+                margin: 10px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+
+            button.btnDisableAll {
+                background-color: #722f37;
+                border: solid 2px #fff;
+                border-radius: 5px;
+                transition: .3s;
+
+                &:hover {
+                    background-color: #692B32;
+                    transition: .3s;
+                }
+            }
+
+            button.btnEnableAll {
+                background-color: #73dc8c;
+                border: solid 2px #000;
+                border-radius: 5px;
+                transition: .3s;
+                color: #000;
+
+                &:hover {
+                    background-color: #5bb06f;
+                    transition: .3s;
+                }
+            }
+
+            button.btnImport {
+                background-color: #f3f3f3;
+                color: #000;
+                border: dotted 2px #000;
+                transition: .3s;
+                border-radius: 5px;
+
+                &:hover {
+                    background-color: #9f9f9f;
+                }
+            }
+        }
+    }
 }
 
 details[open] {
