@@ -4,6 +4,7 @@
 import {
     getAdultContentBlocked,
     getBetsBlocked,
+    getCustomWebsitesBlocked,
     getSocialMediasBlocked,
 } from "../helpers/getSyncStorageDatas";
 
@@ -54,8 +55,58 @@ const handleEnableAll = async () => {
     props.handleChangeShouldRenderPopupStatus();
 };
 
-// const handleImportData = () => {};
-// const handleExportData = () => {};
+const handleExport = async () => {
+    const csvData = [];
+
+    const keys = [
+        "socialMedia",
+        "",
+        "adultContent",
+        "",
+        "bets",
+        "",
+        "customWebsites",
+        "",
+        "",
+        "",
+    ];
+
+    csvData.push(keys);
+
+    const socialMedias = await getSocialMediasBlocked();
+    const adultContent = await getAdultContentBlocked();
+    const bets = await getBetsBlocked();
+    const customs = await getCustomWebsitesBlocked();
+
+    console.log(customs);
+
+    for (let i = 0; i < 20; i++) {
+        const helper = [];
+        helper.push("\n");
+        helper.push([
+            socialMedias[i]?.siteName || "",
+            socialMedias[i]?.restricted || "",
+            adultContent[i]?.siteName || "",
+            adultContent[i]?.restricted || "",
+            bets[i]?.siteName || "",
+            bets[i]?.restricted || "",
+            customs[i]?.siteName || "",
+            customs[i]?.restricted || "",
+            customs[i]?.siteURL || "",
+        ]);
+
+        csvData.push(helper);
+    }
+
+    console.log(csvData);
+
+    const blob = new Blob([csvData.toString()], { type: "text/csv" });
+    const aTag = document.createElement("a");
+
+    aTag.href = URL.createObjectURL(blob);
+    aTag.download = "bve.csv";
+    aTag.click();
+};
 </script>
 <template>
     <details>
@@ -80,7 +131,9 @@ const handleEnableAll = async () => {
             </section>
             <section class="row">
                 <button class="btnImport" type="button">Import</button>
-                <button class="btnImport" type="button">Export</button>
+                <button class="btnImport" type="button" @click="handleExport()">
+                    Export
+                </button>
             </section>
         </article>
     </details>
