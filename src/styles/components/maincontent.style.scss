@@ -203,6 +203,11 @@ details {
 
         section.row {
             padding: 5px 0;
+
+            input#inputCsvImport {
+                display: none;
+            }
+
             button {
                 width: 140px;
                 padding: 10px 0px;

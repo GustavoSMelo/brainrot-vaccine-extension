@@ -1,6 +1,7 @@
 <!-- eslint-disable no-undef -->
 
 <script setup lang="ts">
+// import { ref } from "vue";
 import {
     getAdultContentBlocked,
     getBetsBlocked,
@@ -31,6 +32,8 @@ const props = defineProps({
     },
 });
 
+// const csvImported = ref(null);
+
 const handleDisableAll = () => {
     props.handleChangeSessionInformations("allContent", "All websites");
 };
@@ -59,16 +62,16 @@ const handleExport = async () => {
     const csvData = [];
 
     const keys = [
+        "bveBackup",
         "socialMedia",
-        "",
+        "restricted",
         "adultContent",
-        "",
+        "restricted",
         "bets",
-        "",
+        "restricted",
         "customWebsites",
-        "",
-        "",
-        "",
+        "restricted",
+        "siteURL",
     ];
 
     csvData.push(keys);
@@ -107,6 +110,11 @@ const handleExport = async () => {
     aTag.download = "bve.csv";
     aTag.click();
 };
+
+const handleImport = () => {
+    const inputCsvImport: HTMLFormElement = window.document.querySelector('#inputCsvImport') as HTMLFormElement;
+    inputCsvImport.click();
+};
 </script>
 <template>
     <details>
@@ -130,7 +138,8 @@ const handleExport = async () => {
                 </button>
             </section>
             <section class="row">
-                <button class="btnImport" type="button">Import</button>
+                <input value="" type="file" id="inputCsvImport" />
+                <button class="btnImport" type="button" @click="handleImport()">Import</button>
                 <button class="btnImport" type="button" @click="handleExport()">
                     Export
                 </button>
