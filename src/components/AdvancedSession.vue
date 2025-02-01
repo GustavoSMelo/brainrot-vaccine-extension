@@ -87,16 +87,18 @@ const handleExport = async () => {
         const helper = [];
         helper.push("\n");
         helper.push([
-            socialMedias[i]?.siteName || "",
-            socialMedias[i]?.restricted || "",
-            adultContent[i]?.siteName || "",
-            adultContent[i]?.restricted || "",
-            bets[i]?.siteName || "",
-            bets[i]?.restricted || "",
-            customs[i]?.siteName || "",
-            customs[i]?.restricted || "",
-            customs[i]?.siteURL || "",
+            socialMedias[i]?.siteName,
+            socialMedias[i]?.restricted,
+            adultContent[i]?.siteName,
+            adultContent[i]?.restricted,
+            bets[i]?.siteName,
+            bets[i]?.restricted,
+            customs[i]?.siteName,
+            customs[i]?.restricted,
+            customs[i]?.siteURL,
         ]);
+
+        console.log(helper);
 
         csvData.push(helper);
     }
@@ -111,9 +113,37 @@ const handleExport = async () => {
     aTag.click();
 };
 
-const handleImport = () => {
-    const inputCsvImport: HTMLFormElement = window.document.querySelector('#inputCsvImport') as HTMLFormElement;
+const handleOpenImportFile = () => {
+    const inputCsvImport: HTMLFormElement = window.document.querySelector(
+        "#inputCsvImport"
+    ) as HTMLFormElement;
     inputCsvImport.click();
+};
+
+const handleImport = (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+    if (!fileInput.files || !fileInput.files.length) return;
+
+    const file = fileInput.files[0];
+    const fileReader = new FileReader();
+
+    fileReader.onload = async (element) => {
+        const resultReader = element.target?.result;
+
+        console.log(resultReader);
+        const teste = resultReader?.toString().split(",");
+        console.log(teste);
+    };
+
+    fileReader.onerror = async (element) => {
+        console.error(element);
+        props.handleRemountMainContent();
+        props.handleChangePopupStatus("error");
+        props.handleChangePopupMessage("Error to upload file");
+        props.handleChangeShouldRenderPopupStatus();
+    };
+
+    fileReader.readAsText(file);
 };
 </script>
 <template>
@@ -138,8 +168,20 @@ const handleImport = () => {
                 </button>
             </section>
             <section class="row">
-                <input value="" type="file" id="inputCsvImport" />
-                <button class="btnImport" type="button" @click="handleImport()">Import</button>
+                <input
+                    value=""
+                    type="file"
+                    id="inputCsvImport"
+                    @change="(event) => handleImport(event)"
+                    accept=".csv"
+                />
+                <button
+                    class="btnImport"
+                    type="button"
+                    @click="handleOpenImportFile()"
+                >
+                    Import
+                </button>
                 <button class="btnImport" type="button" @click="handleExport()">
                     Export
                 </button>
