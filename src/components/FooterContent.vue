@@ -13,7 +13,7 @@ const handleLoadProjectRepository = () => {
             <img src="../assets/github.svg" alt="Github Logo" />
             <p>Developed by Gustavo S. Melo</p>
         </div>
-        <small>Version: 1.2.2</small>
+        <small>Version: 1.3.0</small>
     </footer>
 </template>
 
