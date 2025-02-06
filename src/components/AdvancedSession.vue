@@ -1,13 +1,13 @@
 <!-- eslint-disable no-undef -->
 
 <script setup lang="ts">
-// import { ref } from "vue";
 import {
     getAdultContentBlocked,
     getBetsBlocked,
     getCustomWebsitesBlocked,
     getSocialMediasBlocked,
 } from "../helpers/getSyncStorageDatas";
+import { IRestricted, IRestrictedCustom } from "../interfaces/restricted";
 
 const props = defineProps({
     handleChangeSessionInformations: {
@@ -31,8 +31,6 @@ const props = defineProps({
         required: true,
     },
 });
-
-// const csvImported = ref(null);
 
 const handleDisableAll = () => {
     props.handleChangeSessionInformations("allContent", "All websites");
@@ -60,50 +58,43 @@ const handleEnableAll = async () => {
 
 const handleExport = async () => {
     const csvData = [];
-
-    const keys = [
-        "bveBackup",
-        "socialMedia",
-        "restricted",
-        "adultContent",
-        "restricted",
-        "bets",
-        "restricted",
-        "customWebsites",
-        "restricted",
-        "siteURL",
-    ];
-
-    csvData.push(keys);
+    csvData.push("");
+    csvData.push("socialMedia");
 
     const socialMedias = await getSocialMediasBlocked();
     const adultContent = await getAdultContentBlocked();
     const bets = await getBetsBlocked();
     const customs = await getCustomWebsitesBlocked();
 
-    console.log(customs);
-
-    for (let i = 0; i < 20; i++) {
-        const helper = [];
-        helper.push("\n");
-        helper.push([
-            socialMedias[i]?.siteName,
-            socialMedias[i]?.restricted,
-            adultContent[i]?.siteName,
-            adultContent[i]?.restricted,
-            bets[i]?.siteName,
-            bets[i]?.restricted,
-            customs[i]?.siteName,
-            customs[i]?.restricted,
-            customs[i]?.siteURL,
-        ]);
-
-        console.log(helper);
-
-        csvData.push(helper);
+    for (let i = 0; i < socialMedias.length; i++) {
+        csvData.push(socialMedias[i].siteName);
+        csvData.push(socialMedias[i].restricted);
     }
 
-    console.log(csvData);
+    csvData.push("\n");
+
+    csvData.push("adultContent");
+    for (let i = 0; i < adultContent.length; i++) {
+        csvData.push(adultContent[i].siteName);
+        csvData.push(adultContent[i].restricted);
+    }
+
+    csvData.push("\n");
+
+    csvData.push("bets");
+    for (let i = 0; i < bets.length; i++) {
+        csvData.push(bets[i].siteName);
+        csvData.push(bets[i].restricted);
+    }
+
+    csvData.push("\n");
+    csvData.push("customWebsites");
+
+    for (let i = 0; i < customs.length; i++) {
+        csvData.push(customs[i].siteName);
+        csvData.push(customs[i].restricted);
+        csvData.push(customs[i].siteURL);
+    }
 
     const blob = new Blob([csvData.toString()], { type: "text/csv" });
     const aTag = document.createElement("a");
@@ -131,8 +122,101 @@ const handleImport = (event: Event) => {
         const resultReader = element.target?.result;
 
         console.log(resultReader);
-        const teste = resultReader?.toString().split(",");
-        console.log(teste);
+        const arrayOfElements = resultReader?.toString().split("\n") ?? [];
+
+        if (arrayOfElements.length === 0) {
+            props.handleRemountMainContent();
+            props.handleChangePopupStatus("error");
+            props.handleChangePopupMessage("Error to upload file");
+            props.handleChangeShouldRenderPopupStatus();
+
+            return;
+        }
+
+        const socialMedias = arrayOfElements[0].split(",").slice(2);
+        const adultContents = arrayOfElements[1].split(",").slice(2);
+        const bets = arrayOfElements[2].split(",").slice(2);
+        const customs = arrayOfElements[3].split(",").slice(2);
+
+        let socialMediaHelper: Array<IRestricted> = [];
+        let adultContentHelper: Array<IRestricted> = [];
+        let betsHelper: Array<IRestricted> = [];
+        let customHelper: Array<IRestrictedCustom> = [];
+
+        let objKey = "";
+
+        socialMedias.map((item, index) => {
+            if (index % 2 == 1 || index === 0) {
+                objKey = item;
+            } else {
+                socialMediaHelper.push({
+                    siteName: objKey,
+                    restricted: Boolean(item),
+                });
+                objKey = "";
+            }
+        });
+
+        adultContents.map((item, index) => {
+            if (index % 2 == 1 || index === 0) {
+                objKey = item;
+            } else {
+                adultContentHelper.push({
+                    siteName: objKey,
+                    restricted: Boolean(item),
+                });
+                objKey = "";
+            }
+        });
+
+        bets.map((item, index) => {
+            if (index % 2 == 1 || index === 0) {
+                objKey = item;
+            } else {
+                betsHelper.push({
+                    siteName: objKey,
+                    restricted: Boolean(item),
+                });
+                objKey = "";
+            }
+        });
+        let customRestricted = "";
+        let increment = 0;
+
+        customs.map((item) => {
+            if (customs.length <= 0) {
+                return;
+            }
+
+            switch (increment) {
+                case 0:
+                    objKey = item;
+                    increment++;
+                    break;
+                case 1:
+                    customRestricted = item;
+                    increment++;
+                    break;
+                case 2:
+                    customHelper.push({
+                        siteName: objKey,
+                        restricted: Boolean(customRestricted),
+                        siteURL: item,
+                    });
+                    objKey = "";
+                    customRestricted = "";
+                    increment = 0;
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        console.log(socialMedias);
+        console.log(socialMediaHelper);
+        console.log(adultContentHelper);
+        console.log(betsHelper);
+        console.log(customHelper);
     };
 
     fileReader.onerror = async (element) => {
