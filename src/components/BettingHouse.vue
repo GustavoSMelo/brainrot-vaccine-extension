@@ -64,7 +64,7 @@ export default {
 
 <template>
     <details open>
-        <summary aria-controls="bets-content">Betting houses (bets)</summary>
+        <summary aria-controls="bets-content">Bets</summary>
 
         <section>
             <div v-for="(website, index) in websites.bets" :key="index">

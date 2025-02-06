@@ -7,11 +7,15 @@ import FooterContent from "./FooterContent.vue";
 import SocialMedias from "./SocialMedias.vue";
 import DisableBlockerPopup from "./popups/DisableBlockerPopup.vue";
 import HandleCustomBlocker from "./popups/HandleCustomBlocker.vue";
-import AdvancedSession from "./AdvancedSession.vue";
 import StatusPopup from "./popups/StatusPopup.vue";
 import { startSyncData } from "../helpers/websites";
 import { IRestricted } from "../interfaces/restricted";
-import { getCustomWebsitesBlocked } from "../helpers/getSyncStorageDatas";
+import {
+    getAdultContentBlocked,
+    getBetsBlocked,
+    getCustomWebsitesBlocked,
+    getSocialMediasBlocked,
+} from "../helpers/getSyncStorageDatas";
 import CustomWebsites from "./CustomWebsites.vue";
 import ConfirmDeletionCustomPopup from "./popups/ConfirmDeletionCustomPopup.vue";
 
@@ -138,6 +142,31 @@ const returnValueFromEditOrCreateCustomWebsite = (): "create" | "edit" => {
     return editOrCreateCustomWebsite.value;
 };
 
+const handleDisableAll = () => {
+    handleChangeSessionInformations("allContent", "All websites");
+};
+const handleEnableAll = async () => {
+    const adultContent = await getAdultContentBlocked();
+    const socialMedias = await getSocialMediasBlocked();
+    const bets = await getBetsBlocked();
+
+    adultContent.forEach((ac) => (ac.restricted = true));
+    socialMedias.forEach((sm) => (sm.restricted = true));
+    bets.forEach((bet) => (bet.restricted = true));
+
+    // eslint-disable-next-line no-undef
+    await chrome.storage.sync.set({
+        socialMediasBlocked: [...socialMedias],
+        adultContentBlocked: [...adultContent],
+        betsBlocked: [...bets],
+    });
+
+    handleRemountMainContent();
+    handleChangePopupStatus("success");
+    handleChangePopupMessage("All blockers enabled");
+    handleChangeShouldRenderPopupStatus();
+};
+
 setInterval(() => {
     if (shouldRenderPopupStatus.value > 0) {
         shouldRenderPopupStatus.value = 0;
@@ -206,6 +235,24 @@ onMounted(async () => {
             <img src="../assets/plus.svg" alt="plus icon" />
             Add website
         </button>
+        <article class="controlsContainer">
+            <section class="row">
+                <button
+                    class="btnDisableAll"
+                    type="button"
+                    @click="handleDisableAll()"
+                >
+                    Disable all
+                </button>
+                <button
+                    class="btnEnableAll"
+                    type="button"
+                    @click="handleEnableAll()"
+                >
+                    Enable all
+                </button>
+            </section>
+        </article>
 
         <SocialMedias
             :handleChangeSessionInformations="handleChangeSessionInformations"
