@@ -7,12 +7,12 @@ import {
 } from "../helpers/initialStates";
 import { isURLBlocked } from "../helpers/websites";
 
-async function checkAndBlockWebsite(tabId: number, url: string) {
+const checkAndBlockWebsite = async (tabId: number, url: string) => {
     const isUrlBlocked = await isURLBlocked(url);
     if (isUrlBlocked) {
         blockerWebsite(tabId);
     }
-}
+};
 
 // Listen for committed navigation (full page reload or navigation)
 chrome.webNavigation.onCommitted.addListener((details) => {

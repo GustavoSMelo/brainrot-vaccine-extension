@@ -112,6 +112,7 @@ const handleOpenImportFile = () => {
 };
 
 const handleImport = (event: Event) => {
+    event.preventDefault();
     const fileInput = event.target as HTMLInputElement;
     if (!fileInput.files || !fileInput.files.length) return;
 
@@ -133,9 +134,15 @@ const handleImport = (event: Event) => {
             return;
         }
 
-        const socialMedias = arrayOfElements[0].split(",").slice(2);
-        const adultContents = arrayOfElements[1].split(",").slice(2);
-        const bets = arrayOfElements[2].split(",").slice(2);
+        const socialMedias = arrayOfElements[0]
+            .split(",")
+            .slice(2, arrayOfElements[0].length - 1);
+        const adultContents = arrayOfElements[1]
+            .split(",")
+            .slice(2, arrayOfElements[1].length - 1);
+        const bets = arrayOfElements[2]
+            .split(",")
+            .slice(2, arrayOfElements[2].length - 1);
         const customs = arrayOfElements[3].split(",").slice(2);
 
         let socialMediaHelper: Array<IRestricted> = [];
@@ -146,36 +153,38 @@ const handleImport = (event: Event) => {
         let objKey = "";
 
         socialMedias.map((item, index) => {
-            if (index % 2 == 1 || index === 0) {
-                objKey = item;
+            if (index % 2 === 0) {
+                console.log(`socialMediaSiteName: ${item}`);
+                objKey = item.toString();
             } else {
+                console.log(`${objKey}: ${item}`);
                 socialMediaHelper.push({
                     siteName: objKey,
-                    restricted: Boolean(item),
+                    restricted: item === "true" ? true : false,
                 });
                 objKey = "";
             }
         });
 
         adultContents.map((item, index) => {
-            if (index % 2 == 1 || index === 0) {
+            if (index % 2 === 0) {
                 objKey = item;
             } else {
                 adultContentHelper.push({
                     siteName: objKey,
-                    restricted: Boolean(item),
+                    restricted: item === "true" ? true : false,
                 });
                 objKey = "";
             }
         });
 
         bets.map((item, index) => {
-            if (index % 2 == 1 || index === 0) {
+            if (index % 2 === 0) {
                 objKey = item;
             } else {
                 betsHelper.push({
                     siteName: objKey,
-                    restricted: Boolean(item),
+                    restricted: item === "true" ? true : false,
                 });
                 objKey = "";
             }
@@ -200,7 +209,7 @@ const handleImport = (event: Event) => {
                 case 2:
                     customHelper.push({
                         siteName: objKey,
-                        restricted: Boolean(customRestricted),
+                        restricted: customRestricted === "true" ? true : false,
                         siteURL: item,
                     });
                     objKey = "";
@@ -213,10 +222,19 @@ const handleImport = (event: Event) => {
         });
 
         console.log(socialMedias);
+        console.log(adultContents);
+        console.log(bets);
         console.log(socialMediaHelper);
         console.log(adultContentHelper);
         console.log(betsHelper);
         console.log(customHelper);
+
+        await chrome.storage.sync.set({
+            socialMediasBlocked: [...socialMediaHelper],
+            adultContentBlocked: [...adultContentHelper],
+            betsBlocked: [...betsHelper],
+            customWebsites: [...customHelper],
+        });
     };
 
     fileReader.onerror = async (element) => {
@@ -258,6 +276,7 @@ const handleImport = (event: Event) => {
                     id="inputCsvImport"
                     @change="(event) => handleImport(event)"
                     accept=".csv"
+                    tabindex="-1"
                 />
                 <button
                     class="btnImport"
