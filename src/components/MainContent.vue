@@ -10,7 +10,12 @@ import HandleCustomBlocker from "./popups/HandleCustomBlocker.vue";
 import StatusPopup from "./popups/StatusPopup.vue";
 import { startSyncData } from "../helpers/websites";
 import { IRestricted } from "../interfaces/restricted";
-import { getCustomWebsitesBlocked } from "../helpers/getSyncStorageDatas";
+import {
+    getAdultContentBlocked,
+    getBetsBlocked,
+    getCustomWebsitesBlocked,
+    getSocialMediasBlocked,
+} from "../helpers/getSyncStorageDatas";
 import CustomWebsites from "./CustomWebsites.vue";
 import ConfirmDeletionCustomPopup from "./popups/ConfirmDeletionCustomPopup.vue";
 
@@ -19,6 +24,7 @@ const siteName = ref("");
 const isRenderHandleCustomBlockerPopup = ref(false);
 const isRenderHandleConfirmDeletionCustomPopup = ref(false);
 const remountCustomWebsites = ref(false);
+const remountMainContent = ref(true);
 const editOrCreateCustomWebsite = ref<"create" | "edit">("create");
 const popupStatus = ref<"success" | "error">("success");
 const popupMessage = ref("");
@@ -54,7 +60,11 @@ const shouldRemountCustomWebsites = (): boolean => {
 };
 
 const handleChangeSessionInformations = (
-    selectedSession: "socialMedias" | "adultContent" | "bettingHouse",
+    selectedSession:
+        | "socialMedias"
+        | "adultContent"
+        | "bettingHouse"
+        | "allContent",
     selectedSiteName: string
 ): void => {
     siteName.value = selectedSiteName;
@@ -108,17 +118,53 @@ const handleRemountCustomWebsites = (): void => {
     });
 };
 
+const handleRemountMainContent = (): void => {
+    remountMainContent.value = false;
+
+    nextTick(() => {
+        remountMainContent.value = true;
+    });
+};
+
 const handleChangeEditOrCreateCustomWebsite = (
     parameter: "edit" | "create"
 ): void => {
     editOrCreateCustomWebsite.value = parameter;
 };
 
+const shouldRemountMainContent = (): boolean =>
+    remountMainContent.value ? true : false;
+
 const checkIfShouldRenderPopupStatus = (): boolean =>
     shouldRenderPopupStatus.value <= 0 ? true : false;
 
 const returnValueFromEditOrCreateCustomWebsite = (): "create" | "edit" => {
     return editOrCreateCustomWebsite.value;
+};
+
+const handleDisableAll = () => {
+    handleChangeSessionInformations("allContent", "All websites");
+};
+const handleEnableAll = async () => {
+    const adultContent = await getAdultContentBlocked();
+    const socialMedias = await getSocialMediasBlocked();
+    const bets = await getBetsBlocked();
+
+    adultContent.forEach((ac) => (ac.restricted = true));
+    socialMedias.forEach((sm) => (sm.restricted = true));
+    bets.forEach((bet) => (bet.restricted = true));
+
+    // eslint-disable-next-line no-undef
+    await chrome.storage.sync.set({
+        socialMediasBlocked: [...socialMedias],
+        adultContentBlocked: [...adultContent],
+        betsBlocked: [...bets],
+    });
+
+    handleRemountMainContent();
+    handleChangePopupStatus("success");
+    handleChangePopupMessage("All blockers enabled");
+    handleChangeShouldRenderPopupStatus();
 };
 
 setInterval(() => {
@@ -137,9 +183,10 @@ onMounted(async () => {
 <template>
     <DisableBlockerPopup
         v-if="shouldRenderDisableBlockerPopup()"
+        :handleRemountMainContent="handleRemountMainContent"
+        :handleClearSiteSelected="handleClearSiteSelected"
         :siteName="siteName"
         :siteSessionName="siteSessionName"
-        :handleClearSiteSelected="handleClearSiteSelected"
     />
 
     <ConfirmDeletionCustomPopup
@@ -177,7 +224,7 @@ onMounted(async () => {
         :popupStatus="popupStatus"
     />
 
-    <main>
+    <main v-if="shouldRemountMainContent()">
         <ExtensionIntroduction />
 
         <button
@@ -188,6 +235,24 @@ onMounted(async () => {
             <img src="../assets/plus.svg" alt="plus icon" />
             Add website
         </button>
+        <article class="controlsContainer">
+            <section class="row">
+                <button
+                    class="btnDisableAll"
+                    type="button"
+                    @click="handleDisableAll()"
+                >
+                    Disable all
+                </button>
+                <button
+                    class="btnEnableAll"
+                    type="button"
+                    @click="handleEnableAll()"
+                >
+                    Enable all
+                </button>
+            </section>
+        </article>
 
         <SocialMedias
             :handleChangeSessionInformations="handleChangeSessionInformations"
@@ -216,6 +281,16 @@ onMounted(async () => {
                 handleChangeEditOrCreateCustomWebsite
             "
             :handleRenderHandleCustomBlocker="handleRenderHandleCustomBlocker"
+        />
+
+        <AdvancedSession
+            :handleChangeSessionInformations="handleChangeSessionInformations"
+            :handleRemountMainContent="handleRemountMainContent"
+            :handleChangePopupMessage="handleChangePopupMessage"
+            :handleChangePopupStatus="handleChangePopupStatus"
+            :handleChangeShouldRenderPopupStatus="
+                handleChangeShouldRenderPopupStatus
+            "
         />
     </main>
     <FooterContent />

@@ -21,7 +21,7 @@ const getBetsBlocked = async (): Promise<Array<IRestricted>> => {
 };
 
 const getCustomWebsitesBlocked = async (): Promise<Array<IRestrictedCustom>> => {
-    const helper = await chrome.storage.sync.get("customWebsites");
+    const helper = await chrome.storage.sync.get("customWebsites") ?? [];
 
     return helper.customWebsites as Array<IRestrictedCustom>;
 };
