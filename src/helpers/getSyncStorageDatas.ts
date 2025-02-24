@@ -20,6 +20,12 @@ const getBetsBlocked = async (): Promise<Array<IRestricted>> => {
     return helper.betsBlocked as Array<IRestricted>;
 };
 
+const getAIChatBlocked = async (): Promise<Array<IRestricted>> => {
+    const helper = await chrome.storage.sync.get("AiChatBlocked");
+
+    return helper.AiChatBlocked as Array<IRestricted>;
+};
+
 const getCustomWebsitesBlocked = async (): Promise<Array<IRestrictedCustom>> => {
     const helper = await chrome.storage.sync.get("customWebsites") ?? [];
 
@@ -30,5 +36,6 @@ export {
     getSocialMediasBlocked,
     getAdultContentBlocked,
     getBetsBlocked,
+    getAIChatBlocked,
     getCustomWebsitesBlocked,
 };

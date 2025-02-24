@@ -1,6 +1,7 @@
 import blockerWebsite from "../helpers/blocker";
 import {
     adultContentInitialState,
+    AiChatInitialState,
     betsInitialState,
     customWebsitesInitialState,
     socialMediasInitialState,
@@ -36,6 +37,9 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
     await chrome.storage.sync.set({
         betsBlocked: [...betsInitialState],
+    });
+    await chrome.storage.sync.set({
+        AiChatBlocked: [...AiChatInitialState],
     });
     await chrome.storage.sync.set({
         customWebsites: [...customWebsitesInitialState],
