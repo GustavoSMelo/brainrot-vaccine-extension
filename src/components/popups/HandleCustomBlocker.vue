@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { getCustomWebsitesBlocked } from "../../helpers/getSyncStorageDatas";
 import { IRestrictedCustom } from "../../interfaces/restricted";
-import { handleChangeWebsiteCustom } from "../../helpers/websites";
+import { handleChangeWebsiteCustom, isSiteNameBlocked, isURLBlocked } from "../../helpers/websites";
 const props = defineProps({
     handleRenderHandleCustomBlocker: {
         type: Function,
@@ -87,6 +87,25 @@ const handleClickButton = async () => {
 
                 return;
             }
+
+            const isURLblocked = await isURLBlocked(websiteURL.value);
+            const isSiteNameblocked = await isSiteNameBlocked(websiteName.value);
+
+            if (isURLblocked) {
+                props.handleChangePopupStatus("error");
+                props.handleChangePopupMessage("Site URL already blocked");
+                props.handleChangeShouldRenderPopupStatus();
+
+                return;
+            };
+
+            if (isSiteNameblocked) {
+                props.handleChangePopupStatus("error");
+                props.handleChangePopupMessage("Site name already blocked");
+                props.handleChangeShouldRenderPopupStatus();
+
+                return;
+            };
 
             const newWebsite: IRestrictedCustom = {
                 siteName: websiteName.value,

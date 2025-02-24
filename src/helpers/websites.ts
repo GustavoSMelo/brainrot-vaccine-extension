@@ -5,12 +5,14 @@ import TwitterLogo from "../assets/twitter.svg";
 import TelegramLogo from "../assets/telegram.svg";
 import TwitchLogo from "../assets/twitch.svg";
 import RedditLogo from "../assets/reddit.svg";
+import FacebookLogo from '../assets/facebook.svg';
 
 import XvideosLogo from "../assets/xvd.svg";
 import PornhubLogo from "../assets/prnhb.svg";
 import OnlyfansLogo from "../assets/onlyfans.svg";
 import CameraPriveLogo from "../assets/cameraprive.jpg";
 import EroMeLogo from "../assets/erome.svg";
+import RedtubeLogo from '../assets/redtube.png';
 
 import Bet365Logo from "../assets/bet365.png";
 import BetfairLogo from "../assets/betfair.png";
@@ -19,8 +21,16 @@ import TigrinhoLogo from "../assets/tigrinho.jpg";
 import KTOLogo from "../assets/TKO.png";
 import BlazeLogo from "../assets/blaze.webp";
 
+import ChatgptLogo from '../assets/chatgpt.jpg';
+import DeepseekLogo from '../assets/deepseek.svg';
+import CopilotLogo from '../assets/copilot.png';
+import BlackboxAiLogo from '../assets/blackbox.png';
+import GeminiLogo from '../assets/gemini.png';
+import MetaAi from '../assets/Metai.png';
+
 import {
     getAdultContentBlocked,
+    getAIChatBlocked,
     getBetsBlocked,
     getCustomWebsitesBlocked,
     getSocialMediasBlocked,
@@ -31,21 +41,27 @@ import {
     adultContentInitialState,
     betsInitialState,
     socialMediasInitialState,
+    AiChatInitialState
 } from "./initialStates";
 import { IRestrictedCustom } from "../interfaces/restricted";
 
 const socialMediasBlockeds = ref([...socialMediasInitialState]);
 const adultContentBlocked = ref([...adultContentInitialState]);
 const betsBlocked = ref([...betsInitialState]);
+const AiChatBlocked = ref([...AiChatInitialState]);
 
 const startSyncData = async () => {
     const socialMediasHelper = await getSocialMediasBlocked();
     const adultMediasHelper = await getAdultContentBlocked();
     const betsBlockedHelper = await getBetsBlocked();
+    const AiChatBlockedHelper = await getAIChatBlocked();
+
+    console.log(AiChatBlockedHelper);
 
     socialMediasBlockeds.value = [...socialMediasHelper];
     adultContentBlocked.value = [...adultMediasHelper];
     betsBlocked.value = [...betsBlockedHelper];
+    AiChatBlocked.value = [...AiChatBlockedHelper];
 };
 
 const isRestrictedSocialMedia = async (siteName: string) => {
@@ -77,6 +93,21 @@ const isRestrictedBets = async (siteName: string) => {
 const isRestrictedAdultContent = async (siteName: string) => {
     await startSyncData();
     const site = adultContentBlocked.value.find(
+        (site) =>
+            site.siteName.toLowerCase() === siteName.toLowerCase() &&
+            site.restricted
+    );
+
+    if (!site || site === null || site === undefined) {
+        return false;
+    }
+
+    return site.restricted;
+};
+
+const isRestictedAiChat = async (siteName: string) => {
+    await startSyncData();
+    const site = AiChatBlocked.value.find(
         (site) =>
             site.siteName.toLowerCase() === siteName.toLowerCase() &&
             site.restricted
@@ -163,6 +194,22 @@ const handleChangeRestrictionBets = async (siteName: string, restriction: boolea
     await chrome.storage.sync.set({ betsBlocked: [...betsBlocked.value] });
 };
 
+const handleChangeRestrictionAiChat = async (siteName: string, restriction: boolean) => {
+    const site = AiChatBlocked.value.find((site) => site.siteName === siteName);
+
+    if (!site || site === null || site === undefined) {
+        console.error("error");
+        return;
+    }
+
+    site.restricted = restriction;
+
+    AiChatBlocked.value.find((site) => site.siteName === siteName)!.restricted =
+        site.restricted;
+
+    await chrome.storage.sync.set({ "AiChatBlocked": [...AiChatBlocked.value] });
+};
+
 const handleChangeWebsiteCustom = async (
     websiteCustom: Array<IRestrictedCustom>
 ) => {
@@ -198,6 +245,16 @@ const isURLBlocked = async (websiteURL: string): Promise<boolean> => {
         }
     }
 
+
+    for (const ai of websites.AiChat) {
+        if (
+            websiteURL.toLowerCase().startsWith(ai.siteURL.toLowerCase()) &&
+            (await isRestictedAiChat(ai.siteName))
+        ) {
+            return true;
+        }
+    }
+
     for (const cw of customWebsites) {
         if (
             websiteURL.toLowerCase().startsWith(cw.siteURL.toLowerCase()) &&
@@ -208,6 +265,54 @@ const isURLBlocked = async (websiteURL: string): Promise<boolean> => {
     }
 
     return false;
+};
+
+const isSiteNameBlocked = async (websiteName: string): Promise<boolean> => {
+    const customWebsites = await getCustomWebsitesBlocked();
+    let cont = 0;
+
+    for (const ac of websites.adultContent) {
+        if (
+            websiteName.toLowerCase() === ac.siteName.toLowerCase()
+        ) {
+            cont++;
+        }
+    }
+
+    for (const bet of websites.bets) {
+        if (
+            websiteName.toLowerCase() === bet.siteName.toLowerCase()
+        ) {
+            cont++;
+        }
+    }
+
+    for (const sm of websites.socialMedias) {
+        if (
+            websiteName.toLowerCase() === sm.siteName.toLowerCase()
+        ) {
+            cont++;
+        }
+    }
+
+
+    for (const ai of websites.AiChat) {
+        if (
+            websiteName.toLowerCase() === ai.siteName.toLowerCase()
+        ) {
+            cont++;
+        }
+    }
+
+    for (const cw of customWebsites) {
+        if (
+            websiteName.toLowerCase() === cw.siteName.toLowerCase()
+        ) {
+            cont++;
+        }
+    }
+
+    return cont > 0 ? true : false;
 };
 
 const websites = {
@@ -257,6 +362,11 @@ const websites = {
             siteURL: "https://www.reddit.com",
             logo: RedditLogo,
         },
+        {
+            siteName: "Facebook",
+            siteURL: "https://www.facebook.com/",
+            logo: FacebookLogo
+        }
     ],
     adultContent: [
         {
@@ -289,6 +399,16 @@ const websites = {
             siteURL: "https://www.erome.com/",
             logo: EroMeLogo,
         },
+        {
+            siteName: "Redtube",
+            siteURL: "https://www.redtube.com/",
+            logo: RedtubeLogo
+        },
+        {
+            siteName: "Redtube BR",
+            siteURL: "https://www.redtube.com.br/",
+            logo: RedtubeLogo
+        }
     ],
     bets: [
         {
@@ -332,6 +452,38 @@ const websites = {
             logo: BlazeLogo,
         },
     ],
+    AiChat: [
+        {
+            siteName: "ChatGPT",
+            siteURL: "https://chatgpt.com/",
+            logo: ChatgptLogo
+        },
+        {
+            siteName: "DeepSeek",
+            siteURL: "https://www.deepseek.com/",
+            logo: DeepseekLogo
+        },
+        {
+            siteName: "Gemini",
+            siteURL: "https://gemini.google.com/",
+            logo: GeminiLogo,
+        },
+        {
+            siteName: "Copilot",
+            siteURL: "https://copilot.microsoft.com/",
+            logo: CopilotLogo
+        },
+        {
+            siteName: "Meta AI",
+            siteURL: "https://www.meta.ai/",
+            logo: MetaAi
+        },
+        {
+            siteName: "Blackbox AI",
+            siteURL: "https://www.blackbox.ai/",
+            logo: BlackboxAiLogo
+        }
+    ]
 };
 
 export {
@@ -339,11 +491,14 @@ export {
     isRestrictedSocialMedia,
     isRestrictedAdultContent,
     isRestrictedBets,
+    isRestictedAiChat,
     isRestrictedWebsiteCustom,
     handleChangeRestrictionAdultContent,
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
     handleChangeWebsiteCustom,
+    handleChangeRestrictionAiChat,
     isURLBlocked,
+    isSiteNameBlocked,
     startSyncData,
 };

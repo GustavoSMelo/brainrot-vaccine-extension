@@ -18,6 +18,8 @@ const adultContentInitialState = [
     { siteName: "OnlyFans", restricted: true },
     { siteName: "CameraPrive", restricted: true },
     { siteName: "EroMe", restricted: true },
+    { siteName: "Redtube", restricted: true },
+    { siteName: "Redtube BR", restricted: true },
 ] as Array<IRestricted>;
 
 const socialMediasInitialState = [
@@ -27,9 +29,19 @@ const socialMediasInitialState = [
     { siteName: "Twitter / X", restricted: true },
     { siteName: "Telegram", restricted: true },
     { siteName: "Youtube (Shorts)", restricted: true },
+    { siteName: "Facebook", restricted: true },
     { siteName: "Youtube", restricted: false },
     { siteName: "Twitch", restricted: false },
     { siteName: "Reddit", restricted: false },
+] as Array<IRestricted>;
+
+const AiChatInitialState = [
+    { siteName: "Gemini", restricted: true },
+    { siteName: "ChatGPT", restricted: true },
+    { siteName: "DeepSeek", restricted: true },
+    { siteName: "Blackbox AI", restricted: true },
+    { siteName: "Meta AI", restricted: true },
+    { siteName: "Copilot", restricted: true },
 ] as Array<IRestricted>;
 
 const customWebsitesInitialState = [] as Array<IRestrictedCustom>;
@@ -39,4 +51,5 @@ export {
     adultContentInitialState,
     socialMediasInitialState,
     customWebsitesInitialState,
+    AiChatInitialState
 };

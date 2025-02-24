@@ -2,6 +2,7 @@
 import { nextTick, onMounted, ref } from "vue";
 import AdultContent from "./AdultContent.vue";
 import BettingHouse from "./BettingHouse.vue";
+import AiChat from './AiChat.vue';
 import ExtensionIntroduction from "./ExtensionIntroduction.vue";
 import FooterContent from "./FooterContent.vue";
 import SocialMedias from "./SocialMedias.vue";
@@ -64,6 +65,7 @@ const handleChangeSessionInformations = (
         | "socialMedias"
         | "adultContent"
         | "bettingHouse"
+        | "aiChat"
         | "allContent",
     selectedSiteName: string
 ): void => {
@@ -263,6 +265,7 @@ onMounted(async () => {
         <BettingHouse
             :handleChangeSessionInformations="handleChangeSessionInformations"
         />
+        <AiChat :handleChangeSessionInformations="handleChangeSessionInformations" />
         <CustomWebsites
             v-if="shouldRemountCustomWebsites()"
             :handleRenderConfirmDeletionCustomPopup="

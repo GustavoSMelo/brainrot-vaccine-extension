@@ -5,10 +5,12 @@ import {
     handleChangeRestrictionAdultContent,
     handleChangeRestrictionBets,
     handleChangeRestrictionSocialMedia,
+    handleChangeRestrictionAiChat
 } from "../../helpers/websites";
 import {
     getAdultContentBlocked,
     getBetsBlocked,
+    getAIChatBlocked,
     getSocialMediasBlocked,
 } from "../../helpers/getSyncStorageDatas";
 
@@ -31,15 +33,18 @@ const handleDisableAll = async () => {
     const adultContent = await getAdultContentBlocked();
     const socialMedias = await getSocialMediasBlocked();
     const bets = await getBetsBlocked();
+    const aiChat = await getAIChatBlocked();
 
     adultContent.forEach((ac) => (ac.restricted = false));
     socialMedias.forEach((sm) => (sm.restricted = false));
     bets.forEach((bet) => (bet.restricted = false));
+    aiChat.forEach((ai) => (ai.restricted = false));
 
     await chrome.storage.sync.set({
         socialMediasBlocked: [...socialMedias],
         adultContentBlocked: [...adultContent],
         betsBlocked: [...bets],
+        AiChatBlocked: [...aiChat]
     });
 
     props.handleRemountMainContent();
@@ -55,6 +60,9 @@ const handleDisableWebsiteRestriction = (): void => {
             break;
         case "bettingHouse":
             handleChangeRestrictionBets(props.siteName, false);
+            break;
+        case "aiChat":
+            handleChangeRestrictionAiChat(props.siteName, false);
             break;
         case "allContent":
             handleDisableAll();
